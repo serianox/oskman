@@ -1,9 +1,9 @@
 {
   "build": {
-    "beforeDevCommand": "",
-    "beforeBuildCommand": "",
-    "devPath": "ui",
-    "distDir": "ui",
+    "beforeDevCommand": "yarn --cwd ui install",
+    "beforeBuildCommand": "yarn --cwd ui build",
+    "devPath": "ui/dist",
+    "distDir": "ui/dist",
     "withGlobalTauri": true
   },
   "package": {
