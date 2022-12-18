@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "lint": "eslint",
-    "build": "tsc && rsync --progress --update --recursive ./src/* ./dist/"
+    "build": "tsc && cp --verbose --update --recursive ./src/* ./dist/"
   },
   "devDependencies": {
     "@types/node": "^18.11.17",
