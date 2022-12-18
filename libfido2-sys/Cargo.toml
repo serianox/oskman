@@ -1,5 +1,5 @@
 [package]
-name = "libfido2_sys"
+name = "libfido2-sys"
 version = "0.1.0"
 edition = "2021"
 

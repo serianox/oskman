@@ -87,7 +87,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "db6d7e329c562c5dfab7a46a2afabc8b987ab9a4834c9d1ca04dc54c1546cef8"
 
 [[package]]
-name = "libfido2_sys"
+name = "libfido2-sys"
 version = "0.1.0"
 dependencies = [
  "bindgen",
@@ -144,7 +144,7 @@ checksum = "86f0b0d4bf799edbc74508c1e8bf170ff5f41238e5f8225603ca7caaae2b7860"
 name = "oskm"
 version = "0.1.0"
 dependencies = [
- "libfido2_sys",
+ "libfido2-sys",
 ]
 
 [[package]]

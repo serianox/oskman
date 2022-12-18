@@ -7,5 +7,5 @@ edition = "2021"
 
 [dependencies]
 
-[dependencies.libfido2_sys]
+[dependencies.libfido2-sys]
 path = "./libfido2-sys"
