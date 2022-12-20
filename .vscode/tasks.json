@@ -1,0 +1,38 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"command": "yarn",
+			"options": {
+				"cwd": "./ui/",
+			},
+			"args": ["install"],
+			"problemMatcher": [],
+			"label": "yarn: install - ui",
+			"detail": "install dependencies from package"
+		},
+		{
+			"type": "shell",
+			"command": "yarn",
+			"options": {
+				"cwd": "./ui/",
+			},
+			"args": ["lint"],
+			"problemMatcher": [],
+			"label": "yarn: lint - ui",
+			"detail": "eslint"
+		},
+		{
+			"type": "shell",
+			"command": "yarn",
+			"options": {
+				"cwd": "./ui/",
+			},
+			"args": ["build"],
+			"problemMatcher": [],
+			"label": "yarn: build - ui",
+			"detail": "tsc && vite build"
+		}
+	]
+}
