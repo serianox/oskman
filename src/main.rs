@@ -10,6 +10,10 @@ fn greet(name: &str) -> String {
 }
 
 fn main() {
+    unsafe {
+        libfido2_sys::fido_init(0);
+    }
+
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![greet])
         .run(tauri::generate_context!())
