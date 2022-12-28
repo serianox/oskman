@@ -3,10 +3,18 @@
     windows_subsystem = "windows"
 )]
 
+mod schema;
+
+use schema::CustomResponse;
+
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
+fn greet(name: &str) -> Result<CustomResponse, String> {
+    let message = format!("Hello, {}! You've been greeted from Rust!", name);
+    Ok(CustomResponse {
+        message,
+        other_val: 42,
+    })
 }
 
 fn main() {
