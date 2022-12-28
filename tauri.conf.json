@@ -7,7 +7,7 @@
     "withGlobalTauri": true
   },
   "package": {
-    "productName": "oskman",
+    "productName": "Security Key Manager",
     "version": "0.0.0"
   },
   "tauri": {
@@ -62,7 +62,7 @@
         "fullscreen": false,
         "height": 600,
         "resizable": true,
-        "title": "oskman",
+        "title": "Security Key Manager",
         "width": 800
       }
     ]
