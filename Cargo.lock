@@ -1558,11 +1558,20 @@ name = "oskman"
 version = "0.0.0"
 dependencies = [
  "libfido2-sys",
- "schemars",
+ "oskman-schemas",
  "serde",
  "serde_json",
  "tauri",
  "tauri-build",
+]
+
+[[package]]
+name = "oskman-schemas"
+version = "0.1.0"
+dependencies = [
+ "schemars",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

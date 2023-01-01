@@ -3,9 +3,7 @@
     windows_subsystem = "windows"
 )]
 
-mod schema;
-
-use schema::CustomResponse;
+use oskman_schemas::schemas::CustomResponse;
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]

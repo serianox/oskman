@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "lint": "eslint",
+    "pre": "json2ts --input ../dist/schemas.json --output src/schemas.d.ts",
     "build": "tsc && vite build"
   },
   "devDependencies": {

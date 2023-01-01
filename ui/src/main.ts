@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/tauri";
-type CustomResponse = import('./schema').CustomResponse;
+type CustomResponse = import('./schemas').CustomResponse;
 
 let greetInputEl: HTMLInputElement | null;
 let greetMsgEl: HTMLElement | null;
