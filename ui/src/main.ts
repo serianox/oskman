@@ -18,6 +18,27 @@ window.addEventListener("DOMContentLoaded", () => {
     const hash = window.location.hash;
 
     console.log(hash);
+
+    switch(hash) {
+      case "#changepin": {
+        (document.getElementById("main") as HTMLElement).style.display = "none";
+
+        (document.getElementById("currentPinInput") as HTMLInputElement).value = "";
+        (document.getElementById("newPinInput") as HTMLInputElement).value = "";
+        (document.getElementById("newPinConfirm") as HTMLInputElement).value = "";
+
+        (document.getElementById("changepin") as HTMLElement).style.display = "inline";
+
+        break;
+      }
+      default: {
+        (document.getElementById("changepin") as HTMLElement).style.display = "none";
+
+        (document.getElementById("main") as HTMLElement).style.display = "inline";
+
+        break;
+      }
+    }
   });
 });
 
