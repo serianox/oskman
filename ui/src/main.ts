@@ -13,32 +13,63 @@ async function greet() {
   }
 }
 
+interface PageHandler {
+  route: string;
+  element: string;
+  onLoad(): void;
+  onUnload(): void;
+}
+
+let _currentPage: PageHandler;
+const _pageHandlers = {};
+
+const addHandler = (handler: PageHandler) => {
+  if (handler.route == "") _currentPage = handler;
+
+  _pageHandlers[handler.route] = handler;
+};
+
+const onHashChange = (hash: string) => {
+  (document.getElementById(_currentPage.element) as HTMLElement).style.display =
+    "none";
+
+  _currentPage.onUnload();
+
+  _currentPage = _pageHandlers[hash] || _pageHandlers[""];
+
+  _currentPage.onLoad();
+
+  (document.getElementById(_currentPage.element) as HTMLElement).style.display =
+    "inline";
+};
+
+addHandler({
+  route: "",
+  element: "main",
+  onLoad: () => {
+    return;
+  },
+  onUnload: () => {
+    return;
+  },
+} as PageHandler);
+
+addHandler({
+  route: "#changepin",
+  element: "changepin",
+  onLoad: () => {
+    (document.getElementById("currentPinInput") as HTMLInputElement).value = "";
+    (document.getElementById("newPinInput") as HTMLInputElement).value = "";
+    (document.getElementById("newPinConfirm") as HTMLInputElement).value = "";
+  },
+  onUnload: () => {
+    return;
+  },
+} as PageHandler);
+
 window.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("hashchange", () => {
-    const hash = window.location.hash;
-
-    console.log(hash);
-
-    switch(hash) {
-      case "#changepin": {
-        (document.getElementById("main") as HTMLElement).style.display = "none";
-
-        (document.getElementById("currentPinInput") as HTMLInputElement).value = "";
-        (document.getElementById("newPinInput") as HTMLInputElement).value = "";
-        (document.getElementById("newPinConfirm") as HTMLInputElement).value = "";
-
-        (document.getElementById("changepin") as HTMLElement).style.display = "inline";
-
-        break;
-      }
-      default: {
-        (document.getElementById("changepin") as HTMLElement).style.display = "none";
-
-        (document.getElementById("main") as HTMLElement).style.display = "inline";
-
-        break;
-      }
-    }
+    onHashChange(window.location.hash);
   });
 });
 
