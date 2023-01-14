@@ -3,7 +3,17 @@
     windows_subsystem = "windows"
 )]
 
+use log::debug;
 use oskman_schemas::schemas::CustomResponse;
+
+#[tauri::command]
+fn fido_init(flags: i32) {
+    debug!("fido_init");
+
+    unsafe {
+        libfido2_sys::fido_init(flags);
+    }
+}
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
@@ -16,12 +26,10 @@ fn greet(name: &str) -> Result<CustomResponse, String> {
 }
 
 fn main() {
-    unsafe {
-        libfido2_sys::fido_init(0);
-    }
+    env_logger::init();
 
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![fido_init, greet])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

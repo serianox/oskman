@@ -4,6 +4,10 @@ type CustomResponse = import("./schemas").CustomResponse;
 let greetInputEl: HTMLInputElement | null;
 let greetMsgEl: HTMLElement | null;
 
+const fido_init = (flags: number) => {
+  invoke("fido_init", { flags: flags });
+};
+
 async function greet() {
   if (greetMsgEl && greetInputEl) {
     // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
@@ -68,6 +72,8 @@ addHandler({
 } as PageHandler);
 
 window.addEventListener("DOMContentLoaded", () => {
+  fido_init(0);
+
   window.addEventListener("hashchange", () => {
     onHashChange(window.location.hash);
   });
