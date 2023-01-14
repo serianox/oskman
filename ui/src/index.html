@@ -3,143 +3,120 @@
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- Bootstrap CSS -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
-    />
+    <link rel="stylesheet" href="../node_modules/bulma/css/bulma.min.css" />
   </head>
   <body>
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
     <script type="module" src="main.ts" defer></script>
 
     <div role="region" id="main" style="display: visible">
-      <section id="navbar">
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item active" aria-current="page">
-              Security Key
-            </li>
-          </ol>
-        </nav>
-      </section>
+      <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul>
+          <li class="is-active">
+            <a href="#" aria-current="page">Security Key</a>
+          </li>
+        </ul>
+      </nav>
 
-      <div class="container-fluid">
-        <div class="card mx-auto" style="width: 18rem">
-          <div class="card-body">
-            <a role="link" aria-disabled="true">Set pin</a>
-          </div>
-        </div>
-        <div class="card mx-auto" style="width: 18rem">
-          <div class="card-body">
-            <a href="#changepin">Change pin</a>
-          </div>
-        </div>
-        <div class="card mx-auto" style="width: 18rem">
-          <div class="card-body">
-            <a role="link" aria-disabled="true">Reset</a>
-          </div>
-        </div>
-      </div>
+      <aside class="menu">
+        <p class="menu-label">General</p>
+        <ul class="menu-list">
+          <li><a>Set pin</a></li>
+          <li><a href="#changepin">Change pin</a></li>
+          <li><a>Reset</a></li>
+        </ul>
+      </aside>
     </div>
 
     <div role="region" id="changepin" style="display: none">
-      <section id="navbar">
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="#">Security Key</a></li>
-            <li class="breadcrumb-item active" aria-current="page">
-              Change Pin
-            </li>
-          </ol>
-        </nav>
-      </section>
+      <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul>
+          <li><a href="#">Security Key</a></li>
+          <li class="is-active">
+            <a href="#" aria-current="page">Change Pin</a>
+          </li>
+        </ul>
+      </nav>
 
-      <div class="container-fluid">
-        <div class="card mx-auto" style="width: 18rem">
-          <div class="card-body">
-            <h5 class="card-title">Change Pin</h5>
-            <p class="card-text"></p>
-            <div class="input-group mb-3">
-              <input
-                type="password"
-                id="currentPinInput"
-                name="currentPinInput"
-                placeholder="Current Pin"
-                pattern=".{8,}"
-                aria-label=""
-                aria-describedby="basic-addon1"
-                required
-              />
-              <div class="input-group-append">
-                <button
-                  class="btn btn-outline-secondary"
-                  type="button"
+      <div class="columns is-mobile is-centered">
+        <div class="column is-half">
+          <div class="card">
+            <header class="card-header">
+              <p class="card-header-title">Change Pin</p>
+            </header>
+            <div class="card-content">
+              <p class="control has-icons-left has-icons-right">
+                <input
+                  type="password"
+                  id="currentPinInput"
+                  name="currentPinInput"
+                  placeholder="Current Pin"
+                  pattern=".{8,}"
+                  required
+                />
+                <span class="icon is-small is-left">
+                  <i class="fas fa-lock"></i>
+                </span>
+                <span
+                  class="icon is-small is-right"
                   onmousedown="showCurrentPin()"
                   onmouseup="showCurrentPin()"
                 >
-                  👁️
-                </button>
-              </div>
-            </div>
+                  <i class="fas fa-check"></i>
+                </span>
+              </p>
 
-            <div class="input-group mb-3">
-              <input
-                type="password"
-                id="newPinInput"
-                name="newPinInput"
-                placeholder="New Pin (at least four characters)"
-                pattern=".{8,}"
-                aria-label=""
-                aria-describedby="basic-addon1"
-                required
-              />
-              <div class="input-group-append">
-                <button
-                  class="btn btn-outline-secondary"
-                  type="button"
-                  onmousedown="showNewPin()"
-                  onmouseup="showNewPin()"
-                >
-                  👁️
-                </button>
+              <div class="input-group mb-3">
+                <input
+                  type="password"
+                  id="newPinInput"
+                  name="newPinInput"
+                  placeholder="New Pin (at least four characters)"
+                  pattern=".{8,}"
+                  aria-label=""
+                  aria-describedby="basic-addon1"
+                  required
+                />
+                <div class="input-group-append">
+                  <button
+                    class="btn btn-outline-secondary"
+                    type="button"
+                    onmousedown="showNewPin()"
+                    onmouseup="showNewPin()"
+                  >
+                    👁️
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <div class="input-group mb-3">
-              <input
-                type="password"
-                id="newPinConfirm"
-                name="newPinConfirm"
-                placeholder="Confirm Pin"
-                pattern=".{8,}"
-                aria-label=""
-                aria-describedby="basic-addon1"
-                required
-              />
-              <div class="input-group-append">
-                <button
-                  class="btn btn-outline-secondary"
-                  type="button"
-                  onmousedown="showNewPinConfirm()"
-                  onmouseup="showNewPinConfirm()"
-                >
-                  👁️
-                </button>
+              <div class="input-group mb-3">
+                <input
+                  type="password"
+                  id="newPinConfirm"
+                  name="newPinConfirm"
+                  placeholder="Confirm Pin"
+                  pattern=".{8,}"
+                  aria-label=""
+                  aria-describedby="basic-addon1"
+                  required
+                />
+                <div class="input-group-append">
+                  <button
+                    class="btn btn-outline-secondary"
+                    type="button"
+                    onmousedown="showNewPinConfirm()"
+                    onmouseup="showNewPinConfirm()"
+                  >
+                    👁️
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <button type="button" class="btn btn-primary">Confirm</button>
-            <button type="button" class="btn btn-secondary">Cancel</button>
+              <button type="button" class="btn btn-primary">Confirm</button>
+              <button type="button" class="btn btn-secondary">Cancel</button>
+            </div>
           </div>
         </div>
       </div>
