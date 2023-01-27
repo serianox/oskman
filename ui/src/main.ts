@@ -24,27 +24,38 @@ interface PageHandler {
   onUnload(): void;
 }
 
-let _currentPage: PageHandler;
-const _pageHandlers = {};
+let _defaultHandler: PageHandler;
+let _currentHandler: PageHandler;
+const _handlers = {};
 
 const addHandler = (handler: PageHandler) => {
-  if (handler.route == "") _currentPage = handler;
+  if (_currentHandler == null) {
+    _currentHandler = handler;
+  }
 
-  _pageHandlers[handler.route] = handler;
+  if (handler.route == "") {
+    _defaultHandler = handler;
+  }
+
+  _handlers[handler.route] = handler;
 };
 
 const onHashChange = (hash: string) => {
-  (document.getElementById(_currentPage.element) as HTMLElement).style.display =
-    "none";
+  // console.log(hash);
 
-  _currentPage.onUnload();
+  (
+    document.getElementById(_currentHandler.element) as HTMLElement
+  ).style.display = "none";
 
-  _currentPage = _pageHandlers[hash] || _pageHandlers[""];
+  _currentHandler.onUnload();
 
-  _currentPage.onLoad();
+  _currentHandler = _handlers[hash] || _defaultHandler;
 
-  (document.getElementById(_currentPage.element) as HTMLElement).style.display =
-    "inline";
+  _currentHandler.onLoad();
+
+  (
+    document.getElementById(_currentHandler.element) as HTMLElement
+  ).style.display = "inline";
 };
 
 addHandler({
@@ -65,6 +76,17 @@ addHandler({
     (document.getElementById("currentPinInput") as HTMLInputElement).value = "";
     (document.getElementById("newPinInput") as HTMLInputElement).value = "";
     (document.getElementById("newPinConfirm") as HTMLInputElement).value = "";
+  },
+  onUnload: () => {
+    return;
+  },
+} as PageHandler);
+
+addHandler({
+  route: "#reset",
+  element: "reset",
+  onLoad: () => {
+    (document.getElementById("resetConfirm") as HTMLInputElement).value = "";
   },
   onUnload: () => {
     return;
