@@ -1,17 +1,24 @@
-include!("src/schemas.rs");
-
-use std::env;
-use std::fs;
-use std::path::PathBuf;
-// use std::process::Command;
-
-fn generate_schema() {
-    let schema = schemars::schema_for!(CustomResponse);
-    let schema_file = PathBuf::from(env::var("OUT_DIR").unwrap()).join("../../../../../dist/schemas.json");
-    schema_file.parent().map(|path| fs::create_dir_all(path));
-    fs::write(schema_file.clone(), serde_json::to_string_pretty(&schema).unwrap()).unwrap();
-  }
+use std::{
+  ffi::OsStr,
+  fs::{self, File},
+  io::Write,
+};
 
 fn main() {
-    generate_schema();
+  let exports: Vec<_> = fs::read_dir("./bindings")
+      .unwrap()
+      .filter_map(Result::ok)
+      .filter_map(|p| {
+          p.path()
+              .file_stem()
+              .map(OsStr::to_str)
+              .flatten()
+              .map(str::to_owned)
+      })
+      .filter(|f| f != "index")
+      .map(|f| format!("export * from \"./{}\"", f))
+      .collect();
+
+  let mut file = File::create("./bindings/index.ts").unwrap();
+  file.write_all(exports.join("\n").as_bytes()).unwrap();
 }
