@@ -1,5 +1,7 @@
 import { invoke } from "@tauri-apps/api/tauri";
 type CustomResponse = import("./schemas").CustomResponse;
+type FidoResetCommand = import("./schemas").FidoResetCommand;
+type FidoResetResponse = import("./schemas").FidoResetResponse;
 
 let greetInputEl: HTMLInputElement | null;
 let greetMsgEl: HTMLElement | null;
@@ -7,6 +9,11 @@ let greetMsgEl: HTMLElement | null;
 const fido_init = (flags: number) => {
   invoke("fido_init", { flags: flags });
 };
+
+async function fido_reset(dev: FidoResetCommand): Promise<FidoResetResponse> {
+  console.log("fido_reset");
+  return invoke("fido_reset", { parameters: dev });
+}
 
 async function greet() {
   if (greetMsgEl && greetInputEl) {
@@ -108,6 +115,8 @@ declare global {
     showNewPin: () => void;
 
     showNewPinConfirm: () => void;
+
+    reset: () => void;
   }
 }
 
@@ -122,3 +131,10 @@ window.showCurrentPin = showPin("currentPinInput");
 window.showNewPin = showPin("newPinInput");
 
 window.showNewPinConfirm = showPin("newPinConfirm");
+
+window.reset = () => {
+  fido_reset({ dev: "Foo" } as FidoResetCommand).then((_) => {
+    console.log(_);
+    window.location.hash = "";
+  });
+};

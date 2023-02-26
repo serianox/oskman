@@ -1,6 +1,6 @@
 {
   "build": {
-    "beforeDevCommand": "yarn --cwd ui dev",
+    "beforeDevCommand": "yarn --cwd ui build",
     "beforeBuildCommand": "yarn --cwd ui build",
     "devPath": "ui/dist",
     "distDir": "ui/dist",

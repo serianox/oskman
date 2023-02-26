@@ -6,7 +6,7 @@ use std::path::PathBuf;
 use std::process::Command;
 
 fn generate_schema() {
-    let schema = schemars::schema_for!(CustomResponse);
+    let schema = schemars::schema_for!(Schemas);
     let schema_file =
         PathBuf::from(env::var("OUT_DIR").unwrap()).join("../../../../../dist/schemas.json");
     schema_file.parent().map(|path| fs::create_dir_all(path));
