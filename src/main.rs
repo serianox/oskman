@@ -4,7 +4,7 @@
 )]
 
 use log::debug;
-use oskman_schemas::schemas::{CustomResponse, FidoResetCommand, FidoResetResponse};
+use oskman_schemas::schemas::{FidoResetCommand, FidoResetResponse};
 
 fn from_ptr_to_string(ptr: *const i8) -> String {
     let raw_message = unsafe { core::ffi::CStr::from_ptr(ptr) };
@@ -13,7 +13,7 @@ fn from_ptr_to_string(ptr: *const i8) -> String {
 }
 
 unsafe extern "C" fn fido_log_handler(message: *const i8) {
-    println!("{}", from_ptr_to_string(message))
+    debug!("{}", from_ptr_to_string(message))
 }
 
 #[tauri::command]
@@ -31,38 +31,26 @@ fn fido_init(flags: i32) {
 async fn fido_reset(parameters: FidoResetCommand) -> FidoResetResponse {
     debug!("fido_reset");
 
-    let ret: i32;
-
-    unsafe {
+    let ret: i32 = unsafe {
         let dev = libfido2_sys::fido_dev_new();
 
         libfido2_sys::fido_dev_open(dev, parameters.dev.as_bytes().as_ptr() as *const i8);
 
         libfido2_sys::fido_dev_close(dev);
 
-        ret = libfido2_sys::fido_dev_reset(dev);
-    }
+        libfido2_sys::fido_dev_reset(dev)
+    };
 
     let message: String = from_ptr_to_string(unsafe { libfido2_sys::fido_strerr(ret) });
 
     FidoResetResponse { ret, message }
 }
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-#[tauri::command]
-fn greet(name: &str) -> Result<CustomResponse, String> {
-    let message = format!("Hello, {}! You've been greeted from Rust!", name);
-    Ok(CustomResponse {
-        message,
-        other_val: 42,
-    })
-}
-
 fn main() {
     env_logger::init();
 
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![fido_init, fido_reset, greet])
+        .invoke_handler(tauri::generate_handler![fido_init, fido_reset])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
