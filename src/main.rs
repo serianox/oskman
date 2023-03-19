@@ -50,6 +50,17 @@ fn main() {
     env_logger::init();
 
     tauri::Builder::default()
+        .setup(|app| {
+            use tauri::Manager;
+
+            #[cfg(debug_assertions)] // only include this code on debug builds
+            {
+                let window = app.get_window("main").unwrap();
+                window.open_devtools();
+                window.close_devtools();
+            }
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![fido_init, fido_reset])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
