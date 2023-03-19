@@ -7,7 +7,7 @@ pub struct Schemas {
 
 #[derive(serde::Serialize, serde::Deserialize, schemars::JsonSchema)]
 pub struct FidoDeviceList {
-    pub dev: String,
+    pub dev: Vec<String>,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, schemars::JsonSchema)]

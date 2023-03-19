@@ -42,14 +42,12 @@ fn fido_list_devices() -> FidoDeviceList {
 
         if err != libfido2_sys::FIDO_OK {}
 
-        let mut ret: FidoDeviceList = FidoDeviceList { dev: "".to_string() };
+        let mut ret: FidoDeviceList = FidoDeviceList { dev: Vec::new() };
 
         for dev_id in 0..n {
             let dev = libfido2_sys::fido_dev_info_ptr(dev_list, dev_id);
 
-            ret = FidoDeviceList {
-                dev: from_ptr_to_string(libfido2_sys::fido_dev_info_path(dev)),
-            };
+            ret.dev.push(from_ptr_to_string(libfido2_sys::fido_dev_info_path(dev)));
         }
 
         libfido2_sys::fido_dev_info_free(&mut dev_list, n);
