@@ -3,6 +3,8 @@
     windows_subsystem = "windows"
 )]
 
+pub mod fido2;
+
 use log::debug;
 use oskman_schemas::schemas::*;
 
