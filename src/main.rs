@@ -47,7 +47,8 @@ fn fido_list_devices() -> FidoDeviceList {
         for dev_id in 0..n {
             let dev = libfido2_sys::fido_dev_info_ptr(dev_list, dev_id);
 
-            ret.dev.push(from_ptr_to_string(libfido2_sys::fido_dev_info_path(dev)));
+            ret.dev
+                .push(from_ptr_to_string(libfido2_sys::fido_dev_info_path(dev)));
         }
 
         libfido2_sys::fido_dev_info_free(&mut dev_list, n);
@@ -59,17 +60,46 @@ fn fido_list_devices() -> FidoDeviceList {
 }
 
 #[tauri::command]
+async fn fido_get_info(parameters: FidoGetInfoCommand) -> FidoGetInfoResponse {
+    debug!("fido_get_info");
+
+    let ret: i32 = unsafe {
+        let mut cbor_info = libfido2_sys::fido_cbor_info_new();
+
+        let mut dev = libfido2_sys::fido_dev_new();
+
+        libfido2_sys::fido_dev_open(dev, parameters.dev.as_bytes().as_ptr() as *const i8);
+
+        let ret = libfido2_sys::fido_dev_get_cbor_info(dev, cbor_info);
+
+        let aaguid = libfido2_sys:: fido_cbor_info_aaguid_ptr(cbor_info);
+
+        libfido2_sys::fido_dev_close(dev);
+
+        libfido2_sys::fido_dev_free(&mut dev);
+
+        libfido2_sys::fido_cbor_info_free(&mut cbor_info);
+
+        ret
+    };
+
+    FidoGetInfoResponse { ret, message: None }
+}
+
+#[tauri::command]
 async fn fido_reset(parameters: FidoResetCommand) -> FidoResetResponse {
     debug!("fido_reset");
 
     let ret: i32 = unsafe {
-        let dev = libfido2_sys::fido_dev_new();
+        let mut dev = libfido2_sys::fido_dev_new();
 
         libfido2_sys::fido_dev_open(dev, parameters.dev.as_bytes().as_ptr() as *const i8);
 
         let ret = libfido2_sys::fido_dev_reset(dev);
 
         libfido2_sys::fido_dev_close(dev);
+
+        libfido2_sys::fido_dev_free(&mut dev);
 
         ret
     };
