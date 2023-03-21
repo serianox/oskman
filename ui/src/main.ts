@@ -1,9 +1,14 @@
 import { invoke } from "@tauri-apps/api/tauri";
+type FidoDeviceList = import("./schemas").FidoDeviceList;
 type FidoResetCommand = import("./schemas").FidoResetCommand;
 type FidoResetResponse = import("./schemas").FidoResetResponse;
 
 const fido_init = (flags: number) => {
   invoke("fido_init", { flags: flags });
+};
+
+const fido_list_devices = (): Promise<FidoDeviceList> => {
+  return invoke("fido_list_devices");
 };
 
 async function fido_reset(dev: FidoResetCommand): Promise<FidoResetResponse> {
@@ -87,8 +92,14 @@ addHandler({
   },
 } as PageHandler);
 
+let fido_first_device_path : string;
+
 window.addEventListener("DOMContentLoaded", () => {
   fido_init(0);
+
+  const fido_devices = fido_list_devices();
+
+  fido_first_device_path = fido_devices[0]?.dev;
 
   window.addEventListener("hashchange", () => {
     onHashChange(window.location.hash);
@@ -120,7 +131,7 @@ window.showNewPin = showPin("newPinInput");
 window.showNewPinConfirm = showPin("newPinConfirm");
 
 window.reset = () => {
-  fido_reset({ dev: "Foo" } as FidoResetCommand).then((_) => {
+  fido_reset({ dev: fido_first_device_path } as FidoResetCommand).then((_) => {
     console.log(_);
     window.location.hash = "";
   });
