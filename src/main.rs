@@ -14,19 +14,11 @@ fn from_ptr_to_string(ptr: *const i8) -> String {
     String::from_utf8_lossy(raw_message.to_bytes()).to_string()
 }
 
-unsafe extern "C" fn fido_log_handler(message: *const i8) {
-    debug!("{}", from_ptr_to_string(message))
-}
-
 #[tauri::command]
 fn fido_init(flags: i32) {
     debug!("fido_init");
 
-    unsafe {
-        libfido2_sys::fido_init(flags);
-
-        libfido2_sys::fido_set_log_handler(Some(fido_log_handler));
-    }
+    fido2::init(flags)
 }
 
 #[tauri::command]
@@ -74,7 +66,7 @@ async fn fido_get_info(parameters: FidoGetInfoCommand) -> FidoGetInfoResponse {
 
         let ret = libfido2_sys::fido_dev_get_cbor_info(dev, cbor_info);
 
-        let aaguid = libfido2_sys:: fido_cbor_info_aaguid_ptr(cbor_info);
+        let aaguid = libfido2_sys::fido_cbor_info_aaguid_ptr(cbor_info);
 
         libfido2_sys::fido_dev_close(dev);
 
@@ -92,21 +84,11 @@ async fn fido_get_info(parameters: FidoGetInfoCommand) -> FidoGetInfoResponse {
 async fn fido_reset(parameters: FidoResetCommand) -> FidoResetResponse {
     debug!("fido_reset");
 
-    let ret: i32 = unsafe {
-        let mut dev = libfido2_sys::fido_dev_new();
+    let fido_device = fido2::FidoDevice::new(parameters.dev);
 
-        libfido2_sys::fido_dev_open(dev, parameters.dev.as_bytes().as_ptr() as *const i8);
+    let ret = unsafe { libfido2_sys::fido_dev_reset(fido_device.unwrap().dev.as_mut()) };
 
-        let ret = libfido2_sys::fido_dev_reset(dev);
-
-        libfido2_sys::fido_dev_close(dev);
-
-        libfido2_sys::fido_dev_free(&mut dev);
-
-        ret
-    };
-
-    let message: String = from_ptr_to_string(unsafe { libfido2_sys::fido_strerr(ret) });
+    let message: String = fido2::strerr(ret);
 
     FidoResetResponse { ret, message }
 }
