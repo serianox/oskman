@@ -8,12 +8,6 @@ pub mod fido2;
 use log::debug;
 use oskman_schemas::schemas::*;
 
-fn from_ptr_to_string(ptr: *const i8) -> String {
-    let raw_message = unsafe { core::ffi::CStr::from_ptr(ptr) };
-
-    String::from_utf8_lossy(raw_message.to_bytes()).to_string()
-}
-
 #[tauri::command]
 fn fido_init(flags: i32) {
     debug!("fido_init");
@@ -25,30 +19,12 @@ fn fido_init(flags: i32) {
 fn fido_list_devices() -> FidoDeviceList {
     debug!("fido_list_devices");
 
-    let device_list: FidoDeviceList;
+    let mut device_list: FidoDeviceList = FidoDeviceList { dev: Vec::new() };
 
-    device_list = unsafe {
-        let mut dev_list = libfido2_sys::fido_dev_info_new(64);
-
-        let mut n: usize = 0;
-
-        let err = libfido2_sys::fido_dev_info_manifest(dev_list, 64, &mut n);
-
-        if err != libfido2_sys::FIDO_OK {}
-
-        let mut ret: FidoDeviceList = FidoDeviceList { dev: Vec::new() };
-
-        for dev_id in 0..n {
-            let dev = libfido2_sys::fido_dev_info_ptr(dev_list, dev_id);
-
-            ret.dev
-                .push(from_ptr_to_string(libfido2_sys::fido_dev_info_path(dev)));
-        }
-
-        libfido2_sys::fido_dev_info_free(&mut dev_list, n);
-
-        ret
-    };
+    // TODO unwrap
+    for dev_path in fido2::FidoDeviceList::new().unwrap() {
+        device_list.dev.push(dev_path);
+    }
 
     device_list
 }

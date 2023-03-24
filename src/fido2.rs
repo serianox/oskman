@@ -12,7 +12,7 @@ pub fn strerr(ret: std::os::raw::c_int) -> String {
 }
 
 unsafe extern "C" fn fido_log_handler(message: *const i8) {
-  debug!("{}", from_ptr_to_string(message))
+    debug!("{}", from_ptr_to_string(message))
 }
 
 pub fn init(flags: i32) {
@@ -20,6 +20,56 @@ pub fn init(flags: i32) {
         libfido2_sys::fido_init(flags);
 
         libfido2_sys::fido_set_log_handler(Some(fido_log_handler));
+    }
+}
+
+pub(crate) struct FidoDeviceList {
+    c: usize,
+    n: usize,
+    dev_list: NonNull<libfido2_sys::fido_dev_info>,
+}
+
+impl FidoDeviceList {
+    pub fn new() -> Result<FidoDeviceList, String> {
+        let mut dev_list = NonNull::new(unsafe { libfido2_sys::fido_dev_info_new(64) }).unwrap();
+
+        let mut n: usize = 0;
+
+        let err = unsafe { libfido2_sys::fido_dev_info_manifest(dev_list.as_mut(), 64, &mut n) };
+
+        if err != libfido2_sys::FIDO_OK {
+            unsafe { libfido2_sys::fido_dev_info_free(&mut dev_list.as_ptr(), n) };
+
+            return Err(strerr(err));
+        }
+
+        Ok(FidoDeviceList { c: 0, n, dev_list })
+    }
+}
+
+impl Iterator for FidoDeviceList {
+    type Item = String;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.c += 1;
+
+        if self.c == self.n {
+            return None;
+        }
+
+        let dev = unsafe { libfido2_sys::fido_dev_info_ptr(self.dev_list.as_mut(), self.c) };
+
+        Some(from_ptr_to_string(unsafe {
+            libfido2_sys::fido_dev_info_path(dev)
+        }))
+    }
+}
+
+impl Drop for FidoDeviceList {
+    fn drop(&mut self) {
+        unsafe {
+            libfido2_sys::fido_dev_info_free(&mut self.dev_list.as_ptr(), self.n);
+        }
     }
 }
 
