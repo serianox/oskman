@@ -1,15 +1,26 @@
 import { invoke } from "@tauri-apps/api/tauri";
 type FidoDeviceList = import("./schemas").FidoDeviceList;
+type FidoGetInfoCommand = import("./schemas").FidoGetInfoCommand;
+type FidoGetInfoResponse = import("./schemas").FidoGetInfoResponse;
 type FidoResetCommand = import("./schemas").FidoResetCommand;
 type FidoResetResponse = import("./schemas").FidoResetResponse;
 
 const fido_init = (flags: number) => {
+  console.log("fido_init");
   invoke("fido_init", { flags: flags });
 };
 
 const fido_list_devices = (): Promise<FidoDeviceList> => {
+  console.log("fido_list_devices");
   return invoke("fido_list_devices");
 };
+
+async function fido_get_info(
+  dev: FidoGetInfoCommand
+): Promise<FidoGetInfoResponse> {
+  console.log("fido_get_info");
+  return invoke("fido_get_info", { parameters: dev });
+}
 
 async function fido_reset(dev: FidoResetCommand): Promise<FidoResetResponse> {
   console.log("fido_reset");
@@ -92,7 +103,7 @@ addHandler({
   },
 } as PageHandler);
 
-let fido_first_device_path : string;
+let fido_first_device_path: string;
 
 window.addEventListener("DOMContentLoaded", () => {
   fido_init(0);
@@ -100,6 +111,12 @@ window.addEventListener("DOMContentLoaded", () => {
   const fido_devices = fido_list_devices();
 
   fido_first_device_path = fido_devices[0]?.dev;
+
+  console.log(fido_first_device_path);
+
+  if (fido_first_device_path) {
+    fido_get_info({ dev: fido_first_device_path } as FidoGetInfoCommand);
+  }
 
   window.addEventListener("hashchange", () => {
     onHashChange(window.location.hash);

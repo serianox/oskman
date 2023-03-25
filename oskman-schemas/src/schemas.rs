@@ -19,7 +19,6 @@ pub struct FidoGetInfoCommand {
 
 #[derive(serde::Serialize, serde::Deserialize, schemars::JsonSchema)]
 pub struct FidoGetInfoResponse {
-    pub ret: i32,
     pub message: Option<String>,
 }
 
@@ -30,6 +29,5 @@ pub struct FidoResetCommand {
 
 #[derive(serde::Serialize, serde::Deserialize, schemars::JsonSchema)]
 pub struct FidoResetResponse {
-    pub ret: i32,
-    pub message: String,
+    pub message: Option<String>,
 }

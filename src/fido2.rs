@@ -95,6 +95,37 @@ impl FidoDevice {
 
         Ok(FidoDevice { path, dev })
     }
+
+    pub fn get_info(&self) -> Result<bool, String> {
+        let cbor_info = NonNull::new(unsafe { libfido2_sys::fido_cbor_info_new() }).unwrap();
+
+        let err =
+            unsafe { libfido2_sys::fido_dev_get_cbor_info(self.dev.as_ptr(), cbor_info.as_ptr()) };
+
+        if err != libfido2_sys::FIDO_OK {
+            unsafe { libfido2_sys::fido_cbor_info_free(&mut cbor_info.as_ptr()) };
+
+            return Err(strerr(err));
+        }
+
+        let aaguid = unsafe { libfido2_sys::fido_cbor_info_aaguid_ptr(cbor_info.as_ptr()) };
+
+        unsafe { libfido2_sys::fido_cbor_info_free(&mut cbor_info.as_ptr()) };
+
+        Ok(true)
+    }
+
+    pub fn reset(&mut self) -> Result<bool, String> {
+        let err = unsafe { libfido2_sys::fido_dev_reset(self.dev.as_mut()) };
+
+        if err != libfido2_sys::FIDO_OK {
+            unsafe { libfido2_sys::fido_dev_free(&mut self.dev.as_ptr()) };
+
+            return Err(strerr(err));
+        }
+
+        Ok(true)
+    }
 }
 
 impl Drop for FidoDevice {
