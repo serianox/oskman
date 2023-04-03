@@ -29,6 +29,17 @@
 			"options": {
 				"cwd": "./ui/",
 			},
+			"args": ["dev"],
+			"problemMatcher": [],
+			"label": "yarn: dev - ui",
+			"detail": "tsc && vite"
+		},
+		{
+			"type": "shell",
+			"command": "yarn",
+			"options": {
+				"cwd": "./ui/",
+			},
 			"args": ["build"],
 			"problemMatcher": [],
 			"label": "yarn: build - ui",
