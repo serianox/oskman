@@ -51,13 +51,13 @@ impl Iterator for FidoDeviceList {
     type Item = String;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.c += 1;
-
         if self.c == self.n {
             return None;
         }
 
         let dev = unsafe { libfido2_sys::fido_dev_info_ptr(self.dev_list.as_mut(), self.c) };
+
+        self.c += 1;
 
         Some(from_ptr_to_string(unsafe {
             libfido2_sys::fido_dev_info_path(dev)
@@ -108,7 +108,7 @@ impl FidoDevice {
             return Err(strerr(err));
         }
 
-        let aaguid = unsafe { libfido2_sys::fido_cbor_info_aaguid_ptr(cbor_info.as_ptr()) };
+        let _aaguid = unsafe { libfido2_sys::fido_cbor_info_aaguid_ptr(cbor_info.as_ptr()) };
 
         unsafe { libfido2_sys::fido_cbor_info_free(&mut cbor_info.as_ptr()) };
 
