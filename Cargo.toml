@@ -3,7 +3,7 @@ name = "oskman"
 version = "0.0.0"
 description = ""
 authors = ["Thomas Duboucher <thomas@duboucher.eu>"]
-license = ""
+license = "MIT / Apache-2.0"
 repository = ""
 edition = "2021"
 
