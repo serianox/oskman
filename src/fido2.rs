@@ -15,9 +15,9 @@ unsafe extern "C" fn fido_log_handler(message: *const i8) {
     debug!("{}", from_ptr_to_string(message))
 }
 
-pub fn init(flags: i32) {
+pub fn init() {
     unsafe {
-        libfido2_sys::fido_init(flags);
+        libfido2_sys::fido_init(libfido2_sys::FIDO_DEBUG);
 
         libfido2_sys::fido_set_log_handler(Some(fido_log_handler));
     }

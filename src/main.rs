@@ -9,10 +9,10 @@ use log::debug;
 use oskman_schemas::schemas::*;
 
 #[tauri::command]
-fn fido_init(flags: i32) {
+fn fido_init() {
     debug!("fido_init");
 
-    fido2::init(flags)
+    fido2::init()
 }
 
 #[tauri::command]

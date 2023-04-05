@@ -5,9 +5,9 @@ type FidoGetInfoResponse = import("./schemas").FidoGetInfoResponse;
 type FidoResetCommand = import("./schemas").FidoResetCommand;
 type FidoResetResponse = import("./schemas").FidoResetResponse;
 
-const fido_init = (flags: number) => {
+const fido_init = () => {
   console.log("fido_init");
-  invoke("fido_init", { flags: flags });
+  invoke("fido_init");
 };
 
 const fido_list_devices = (): Promise<FidoDeviceList> => {
@@ -106,7 +106,7 @@ addHandler({
 let fido_first_device_path: string;
 
 window.addEventListener("DOMContentLoaded", () => {
-  fido_init(0);
+  fido_init();
 
   const fido_devices = fido_list_devices();
 
