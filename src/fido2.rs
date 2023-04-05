@@ -74,8 +74,8 @@ impl Drop for FidoDeviceList {
 }
 
 pub(crate) struct FidoDevice {
-    pub path: String,
-    pub dev: NonNull<libfido2_sys::fido_dev>,
+    pub _path: String,
+    dev: NonNull<libfido2_sys::fido_dev>,
 }
 
 impl FidoDevice {
@@ -93,26 +93,11 @@ impl FidoDevice {
             return Err(strerr(err));
         }
 
-        Ok(FidoDevice { path, dev })
+        Ok(FidoDevice { _path: path, dev })
     }
 
-    pub fn get_info(&self) -> Result<bool, String> {
-        let cbor_info = NonNull::new(unsafe { libfido2_sys::fido_cbor_info_new() }).unwrap();
-
-        let err =
-            unsafe { libfido2_sys::fido_dev_get_cbor_info(self.dev.as_ptr(), cbor_info.as_ptr()) };
-
-        if err != libfido2_sys::FIDO_OK {
-            unsafe { libfido2_sys::fido_cbor_info_free(&mut cbor_info.as_ptr()) };
-
-            return Err(strerr(err));
-        }
-
-        let _aaguid = unsafe { libfido2_sys::fido_cbor_info_aaguid_ptr(cbor_info.as_ptr()) };
-
-        unsafe { libfido2_sys::fido_cbor_info_free(&mut cbor_info.as_ptr()) };
-
-        Ok(true)
+    pub fn get_info(&mut self) -> Result<AuthenticatorInfo, String> {
+        AuthenticatorInfo::new(&mut self.dev)
     }
 
     pub fn reset(&mut self) -> Result<bool, String> {
@@ -135,5 +120,34 @@ impl Drop for FidoDevice {
 
             libfido2_sys::fido_dev_free(&mut self.dev.as_ptr());
         }
+    }
+}
+
+pub(crate) struct AuthenticatorInfo {
+    cbor_info: NonNull<libfido2_sys::fido_cbor_info>,
+}
+
+impl AuthenticatorInfo {
+    pub fn new(dev: &mut NonNull<libfido2_sys::fido_dev>) -> Result<AuthenticatorInfo, String> {
+        // assume now that memory allocation will never fail
+        let cbor_info = NonNull::new(unsafe { libfido2_sys::fido_cbor_info_new() }).unwrap();
+
+        let err = unsafe { libfido2_sys::fido_dev_get_cbor_info(dev.as_ptr(), cbor_info.as_ptr()) };
+
+        if err != libfido2_sys::FIDO_OK {
+            unsafe { libfido2_sys::fido_cbor_info_free(&mut cbor_info.as_ptr()) };
+
+            return Err(strerr(err));
+        }
+
+        let _aaguid = unsafe { libfido2_sys::fido_cbor_info_aaguid_ptr(cbor_info.as_ptr()) };
+
+        Ok(AuthenticatorInfo { cbor_info })
+    }
+}
+
+impl Drop for AuthenticatorInfo {
+    fn drop(&mut self) {
+        unsafe { libfido2_sys::fido_cbor_info_free(&mut self.cbor_info.as_ptr()) };
     }
 }

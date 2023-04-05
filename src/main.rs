@@ -28,7 +28,7 @@ fn fido_list_devices() -> FidoDeviceList {
 async fn fido_get_info(parameters: FidoGetInfoCommand) -> FidoGetInfoResponse {
     debug!("fido_get_info");
 
-    let fido_device = fido2::FidoDevice::new(parameters.dev).unwrap();
+    let mut fido_device = fido2::FidoDevice::new(parameters.dev).unwrap();
 
     fido_device.get_info();
 
