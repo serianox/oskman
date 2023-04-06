@@ -103,7 +103,7 @@ addHandler({
   },
 } as PageHandler);
 
-let fido_first_device_path: string;
+let fido_first_device_path: NonNullable<string> = "";
 
 window.addEventListener("DOMContentLoaded", () => {
   fido_init();
@@ -148,7 +148,7 @@ window.showNewPin = showPin("newPinInput");
 window.showNewPinConfirm = showPin("newPinConfirm");
 
 window.reset = () => {
-  fido_reset({ dev: fido_first_device_path } as FidoResetCommand).then((_) => {
+  fido_reset({ dev: "${fido_first_device_path}" } as FidoResetCommand).then((_) => {
     console.log(_);
     window.location.hash = "";
   });
