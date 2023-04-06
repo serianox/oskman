@@ -16,35 +16,34 @@ fn fido_init() {
 }
 
 #[tauri::command]
-fn fido_list_devices() -> FidoDeviceList {
+fn fido_list_devices() -> Result<FidoDeviceList, String> {
     debug!("fido_list_devices");
 
-    FidoDeviceList {
-        dev: Vec::from_iter(fido2::FidoDeviceList::new().unwrap()),
-    }
+    fido2::FidoDeviceList::new().map(|device_list| FidoDeviceList {
+        dev: Vec::from_iter(device_list),
+    })
 }
 
 #[tauri::command]
-async fn fido_get_info(parameters: FidoGetInfoCommand) -> FidoGetInfoResponse {
+async fn fido_get_info(parameters: FidoGetInfoCommand) -> Result<FidoGetInfoResponse, String> {
     debug!("fido_get_info");
 
-    let mut fido_device = fido2::FidoDevice::new(parameters.dev).unwrap();
+    let mut fido_device = fido2::FidoDevice::new(parameters.dev)?;
 
-    fido_device.get_info();
-
-    FidoGetInfoResponse { message: None }
+    fido_device
+        .get_info()
+        .map(|_| FidoGetInfoResponse { result: true })
 }
 
 #[tauri::command]
-async fn fido_reset(parameters: FidoResetCommand) -> FidoResetResponse {
+async fn fido_reset(parameters: FidoResetCommand) -> Result<FidoResetResponse, String> {
     debug!("fido_reset");
 
-    let mut fido_device = fido2::FidoDevice::new(parameters.dev).unwrap();
+    let mut fido_device = fido2::FidoDevice::new(parameters.dev)?;
 
-    match fido_device.reset() {
-        Ok(_) => FidoResetResponse { message: None },
-        Err(err) => FidoResetResponse { message: Some(err) },
-    }
+    fido_device
+        .reset()
+        .map(|_| FidoResetResponse { result: true })
 }
 
 fn main() {
@@ -56,9 +55,10 @@ fn main() {
 
             #[cfg(debug_assertions)] // only include this code on debug builds
             {
-                let window = app.get_window("main").unwrap();
-                window.open_devtools();
-                window.close_devtools();
+                app.get_window("main").map(|window| {
+                    window.open_devtools();
+                    window.close_devtools();
+                });
             }
             Ok(())
         })

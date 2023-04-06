@@ -19,7 +19,7 @@ pub struct FidoGetInfoCommand {
 
 #[derive(serde::Serialize, serde::Deserialize, schemars::JsonSchema)]
 pub struct FidoGetInfoResponse {
-    pub message: Option<String>,
+    pub result: bool,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, schemars::JsonSchema)]
@@ -29,5 +29,5 @@ pub struct FidoResetCommand {
 
 #[derive(serde::Serialize, serde::Deserialize, schemars::JsonSchema)]
 pub struct FidoResetResponse {
-    pub message: Option<String>,
+    pub result: bool,
 }
