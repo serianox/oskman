@@ -4,52 +4,65 @@ use std::env;
 use std::path::PathBuf;
 
 fn main() {
-    // This is the directory where the `c` library is located.
-    let libdir_path = PathBuf::from("libfido2")
-        // Canonicalize the path as `rustc-link-search` requires an absolute
-        // path.
-        .canonicalize()
-        .expect("cannot canonicalize path");
-
-    // This is the path to the static library file.
-    let lib_path = libdir_path.join("build/src");
-
-    // Tell cargo to look for shared libraries in the specified directory
-    println!("cargo:rustc-link-search={}", lib_path.to_str().unwrap());
-
-    // Tell cargo to tell rustc to link the system libfido2
-    // shared library.
-    println!("cargo:rustc-link-lib=fido2");
-
-    // Tell cargo to invalidate the built crate whenever the wrapper changes
-    println!("cargo:rerun-if-changed=wrapper.h");
-
-    // Unwrap if it is not possible to spawn the process.
-    if !std::process::Command::new("cmake")
-        .current_dir(libdir_path.clone())
-        .arg("-B")
-        .arg("build")
-        .output()
-        .expect("could not spawn `cmake`")
-        .status
-        .success()
+    #[cfg(feature = "dylibfido2")]
     {
-        // Panic if the command was not successful.
-        panic!("could not run cmake");
+        // Tell cargo to tell rustc to link the system libfido2
+        // shared library.
+        println!("cargo:rustc-link-lib=fido2");
+
+        // Tell cargo to invalidate the built crate whenever the wrapper changes
+        println!("cargo:rerun-if-changed=wrapper.h");
     }
 
-    // Unwrap if it is not possible to spawn the process.
-    if !std::process::Command::new("make")
-        .current_dir(libdir_path.clone())
-        .arg("-C")
-        .arg("build")
-        .output()
-        .expect("could not spawn `make`")
-        .status
-        .success()
+    #[cfg(not(feature = "dylibfido2"))]
     {
-        // Panic if the command was not successful.
-        panic!("could not run make");
+        // This is the directory where the `c` library is located.
+        let libdir_path = PathBuf::from("libfido2")
+            // Canonicalize the path as `rustc-link-search` requires an absolute
+            // path.
+            .canonicalize()
+            .expect("cannot canonicalize path");
+
+        // This is the path to the static library file.
+        let lib_path = libdir_path.join("build/src");
+
+        // Tell cargo to look for shared libraries in the specified directory
+        println!("cargo:rustc-link-search={}", lib_path.to_str().unwrap());
+
+        // Tell cargo to tell rustc to link the system libfido2
+        // shared library.
+        println!("cargo:rustc-link-lib=fido2");
+
+        // Tell cargo to invalidate the built crate whenever the wrapper changes
+        println!("cargo:rerun-if-changed=wrapper.h");
+
+        // Unwrap if it is not possible to spawn the process.
+        if !std::process::Command::new("cmake")
+            .current_dir(libdir_path.clone())
+            .arg("-B")
+            .arg("build")
+            .output()
+            .expect("could not spawn `cmake`")
+            .status
+            .success()
+        {
+            // Panic if the command was not successful.
+            panic!("could not run cmake");
+        }
+
+        // Unwrap if it is not possible to spawn the process.
+        if !std::process::Command::new("make")
+            .current_dir(libdir_path.clone())
+            .arg("-C")
+            .arg("build")
+            .output()
+            .expect("could not spawn `make`")
+            .status
+            .success()
+        {
+            // Panic if the command was not successful.
+            panic!("could not run make");
+        }
     }
 
     // The bindgen::Builder is the main entry point
