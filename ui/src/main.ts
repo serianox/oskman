@@ -108,15 +108,17 @@ let fido_first_device_path: NonNullable<string> = "";
 window.addEventListener("DOMContentLoaded", () => {
   fido_init();
 
-  const fido_devices = fido_list_devices();
+  fido_list_devices().then((device_list) => {
+    fido_first_device_path = device_list.dev[0];
 
-  fido_first_device_path = fido_devices[0]?.dev;
+    console.log(fido_first_device_path);
 
-  console.log(fido_first_device_path);
-
-  if (fido_first_device_path) {
-    fido_get_info({ dev: fido_first_device_path } as FidoGetInfoCommand);
-  }
+    if (fido_first_device_path) {
+      fido_get_info({ dev: fido_first_device_path } as FidoGetInfoCommand).then(
+        console.log
+      );
+    }
+  });
 
   window.addEventListener("hashchange", () => {
     onHashChange(window.location.hash);
@@ -148,8 +150,10 @@ window.showNewPin = showPin("newPinInput");
 window.showNewPinConfirm = showPin("newPinConfirm");
 
 window.reset = () => {
-  fido_reset({ dev: "${fido_first_device_path}" } as FidoResetCommand).then((_) => {
-    console.log(_);
-    window.location.hash = "";
-  });
+  fido_reset({ dev: "${fido_first_device_path}" } as FidoResetCommand).then(
+    (_) => {
+      console.log(_);
+      window.location.hash = "";
+    }
+  );
 };

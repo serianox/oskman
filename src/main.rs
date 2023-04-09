@@ -30,9 +30,11 @@ async fn fido_get_info(parameters: FidoGetInfoCommand) -> Result<FidoGetInfoResp
 
     let mut fido_device = fido2::FidoDevice::new(parameters.dev)?;
 
-    fido_device
-        .get_info()
-        .map(|_| FidoGetInfoResponse { result: true })
+    let mut authenticator_info = fido_device.get_info()?;
+
+    let aaguid = hex::encode(authenticator_info.get_aaguid());
+
+    Ok(FidoGetInfoResponse { aaguid })
 }
 
 #[tauri::command]

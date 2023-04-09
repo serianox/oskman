@@ -140,9 +140,16 @@ impl AuthenticatorInfo {
             return Err(strerr(err));
         }
 
-        let _aaguid = unsafe { libfido2_sys::fido_cbor_info_aaguid_ptr(cbor_info.as_ptr()) };
-
         Ok(AuthenticatorInfo { cbor_info })
+    }
+
+    pub fn get_aaguid<'a>(&'a mut self) -> &'a [u8] {
+        unsafe {
+            std::slice::from_raw_parts(
+                libfido2_sys::fido_cbor_info_aaguid_ptr(self.cbor_info.as_ptr()),
+                libfido2_sys::fido_cbor_info_aaguid_len(self.cbor_info.as_ptr()),
+            )
+        }
     }
 }
 

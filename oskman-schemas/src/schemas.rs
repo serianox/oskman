@@ -19,7 +19,7 @@ pub struct FidoGetInfoCommand {
 
 #[derive(serde::Serialize, serde::Deserialize, schemars::JsonSchema)]
 pub struct FidoGetInfoResponse {
-    pub result: bool,
+    pub aaguid: String,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, schemars::JsonSchema)]
