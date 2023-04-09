@@ -1,13 +1,13 @@
 use log::debug;
 use std::ptr::NonNull;
 
-fn from_ptr_to_string(ptr: *const i8) -> String {
+fn from_ptr_to_string(ptr: *const core::ffi::c_char) -> String {
     let raw_message = unsafe { core::ffi::CStr::from_ptr(ptr) };
 
     String::from_utf8_lossy(raw_message.to_bytes()).to_string()
 }
 
-pub fn strerr(ret: std::os::raw::c_int) -> String {
+fn strerr(ret: std::os::raw::c_int) -> String {
     from_ptr_to_string(unsafe { libfido2_sys::fido_strerr(ret) })
 }
 
@@ -149,6 +149,18 @@ impl AuthenticatorInfo {
                 libfido2_sys::fido_cbor_info_aaguid_ptr(self.cbor_info.as_ptr()),
                 libfido2_sys::fido_cbor_info_aaguid_len(self.cbor_info.as_ptr()),
             )
+        }
+    }
+
+    pub fn get_extensions<'a>(&'a mut self) -> Vec<&'a str> {
+        unsafe {
+            std::slice::from_raw_parts(
+                libfido2_sys::fido_cbor_info_extensions_ptr(self.cbor_info.as_ptr()),
+                libfido2_sys::fido_cbor_info_extensions_len(self.cbor_info.as_ptr()),
+            )
+            .iter()
+            .map(|ext| std::str::from_utf8_unchecked(core::ffi::CStr::from_ptr(*ext).to_bytes()))
+            .collect()
         }
     }
 }
