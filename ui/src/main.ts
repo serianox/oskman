@@ -114,8 +114,8 @@ window.addEventListener("DOMContentLoaded", () => {
     console.log(fido_first_device_path);
 
     if (fido_first_device_path) {
-      fido_get_info({ dev: fido_first_device_path } as FidoGetInfoCommand).then(
-        console.log
+      fido_get_info({ dev: fido_first_device_path } as FidoGetInfoCommand).then(_ =>
+        console.log(JSON.stringify(_, null, 4))
       );
     }
   });

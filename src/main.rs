@@ -32,15 +32,26 @@ async fn fido_get_info(parameters: FidoGetInfoCommand) -> Result<FidoGetInfoResp
 
     let mut authenticator_info = fido_device.get_info()?;
 
-    debug!("{:?}", authenticator_info.get_versions());
+    let versions = authenticator_info
+        .get_versions()
+        .map(|vec| vec.iter().map(|str| str.to_string()).collect());
 
     let aaguid = hex::encode(authenticator_info.get_aaguid());
 
-    debug!("{:?}", authenticator_info.get_extensions());
+    let extensions = authenticator_info
+        .get_extensions()
+        .map(|vec| vec.iter().map(|str| str.to_string()).collect());
 
-    debug!("{:?}", authenticator_info.get_options());
+    let options = authenticator_info
+        .get_options()
+        .map(|vec| vec.iter().map(|str| str.to_string()).collect());
 
-    Ok(FidoGetInfoResponse { aaguid })
+    Ok(FidoGetInfoResponse {
+        versions,
+        aaguid,
+        extensions,
+        options,
+    })
 }
 
 #[tauri::command]

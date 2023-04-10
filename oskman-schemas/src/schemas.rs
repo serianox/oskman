@@ -19,7 +19,10 @@ pub struct FidoGetInfoCommand {
 
 #[derive(serde::Serialize, serde::Deserialize, schemars::JsonSchema)]
 pub struct FidoGetInfoResponse {
+    pub versions: Option<Vec<String>>,
     pub aaguid: String,
+    pub extensions: Option<Vec<String>>,
+    pub options: Option<Vec<String>>,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, schemars::JsonSchema)]
