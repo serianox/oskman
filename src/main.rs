@@ -32,7 +32,13 @@ async fn fido_get_info(parameters: FidoGetInfoCommand) -> Result<FidoGetInfoResp
 
     let mut authenticator_info = fido_device.get_info()?;
 
+    debug!("{:?}", authenticator_info.get_versions());
+
     let aaguid = hex::encode(authenticator_info.get_aaguid());
+
+    debug!("{:?}", authenticator_info.get_extensions());
+
+    debug!("{:?}", authenticator_info.get_options());
 
     Ok(FidoGetInfoResponse { aaguid })
 }

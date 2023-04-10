@@ -15,6 +15,18 @@ unsafe extern "C" fn fido_log_handler(message: *const i8) {
     debug!("{}", from_ptr_to_string(message))
 }
 
+unsafe fn from_str_arr_to_vec<'a>(
+    ptr: *mut *mut std::ffi::c_char,
+    len: usize,
+) -> Option<Vec<&'a str>> {
+    ptr.as_ref().map(|ptr| {
+        std::slice::from_raw_parts(ptr, len)
+            .iter()
+            .map(|ext| std::str::from_utf8_unchecked(core::ffi::CStr::from_ptr(*ext).to_bytes()))
+            .collect()
+    })
+}
+
 pub fn init() {
     unsafe {
         libfido2_sys::fido_init(libfido2_sys::FIDO_DEBUG);
@@ -143,6 +155,15 @@ impl AuthenticatorInfo {
         Ok(AuthenticatorInfo { cbor_info })
     }
 
+    pub fn get_versions<'a>(&'a mut self) -> Option<Vec<&'a str>> {
+        unsafe {
+            from_str_arr_to_vec(
+                libfido2_sys::fido_cbor_info_versions_ptr(self.cbor_info.as_ptr()),
+                libfido2_sys::fido_cbor_info_versions_len(self.cbor_info.as_ptr()),
+            )
+        }
+    }
+
     pub fn get_aaguid<'a>(&'a mut self) -> &'a [u8] {
         unsafe {
             std::slice::from_raw_parts(
@@ -152,15 +173,21 @@ impl AuthenticatorInfo {
         }
     }
 
-    pub fn get_extensions<'a>(&'a mut self) -> Vec<&'a str> {
+    pub fn get_extensions<'a>(&'a mut self) -> Option<Vec<&'a str>> {
         unsafe {
-            std::slice::from_raw_parts(
+            from_str_arr_to_vec(
                 libfido2_sys::fido_cbor_info_extensions_ptr(self.cbor_info.as_ptr()),
                 libfido2_sys::fido_cbor_info_extensions_len(self.cbor_info.as_ptr()),
             )
-            .iter()
-            .map(|ext| std::str::from_utf8_unchecked(core::ffi::CStr::from_ptr(*ext).to_bytes()))
-            .collect()
+        }
+    }
+
+    pub fn get_options<'a>(&'a mut self) -> Option<Vec<&'a str>> {
+        unsafe {
+            from_str_arr_to_vec(
+                libfido2_sys::fido_cbor_info_options_name_ptr(self.cbor_info.as_ptr()),
+                libfido2_sys::fido_cbor_info_options_len(self.cbor_info.as_ptr()),
+            )
         }
     }
 }
