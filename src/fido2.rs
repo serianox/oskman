@@ -182,12 +182,27 @@ impl AuthenticatorInfo {
         }
     }
 
-    pub fn get_options<'a>(&'a mut self) -> Option<Vec<&'a str>> {
+    pub fn get_options<'a>(&'a mut self) -> Option<Vec<(&'a str, &'a bool)>> {
         unsafe {
-            from_str_arr_to_vec(
+            let keys = from_str_arr_to_vec(
                 libfido2_sys::fido_cbor_info_options_name_ptr(self.cbor_info.as_ptr()),
                 libfido2_sys::fido_cbor_info_options_len(self.cbor_info.as_ptr()),
-            )
+            );
+
+            let values: Option<Vec<&bool>> =
+                libfido2_sys::fido_cbor_info_options_value_ptr(self.cbor_info.as_ptr())
+                    .as_ref()
+                    .map(|ptr| {
+                        std::slice::from_raw_parts(
+                            ptr,
+                            libfido2_sys::fido_cbor_info_options_len(self.cbor_info.as_ptr()),
+                        )
+                        .iter()
+                        .map(|value| value)
+                        .collect()
+                    });
+
+            keys.map(|keys| std::iter::zip(keys, values.unwrap()).collect())
         }
     }
 }

@@ -42,9 +42,34 @@ async fn fido_get_info(parameters: FidoGetInfoCommand) -> Result<FidoGetInfoResp
         .get_extensions()
         .map(|vec| vec.iter().map(|str| str.to_string()).collect());
 
-    let options = authenticator_info
-        .get_options()
-        .map(|vec| vec.iter().map(|str| str.to_string()).collect());
+    let options = {
+        authenticator_info.get_options().map(|options| {
+            let mut plat = None;
+            let mut rk = None;
+            let mut client_pin = None;
+            let mut up = None;
+            let mut uv = None;
+
+            for (key, &value) in options.iter() {
+                match key {
+                    &"plat" => plat = Some(value),
+                    &"rk" => rk = Some(value),
+                    &"clientPin" => client_pin = Some(value),
+                    &"up" => up = Some(value),
+                    &"uv" => uv = Some(value),
+                    _ => {}
+                }
+            }
+
+            FidoGetInfoOptions {
+                plat,
+                rk,
+                client_pin,
+                up,
+                uv,
+            }
+        })
+    };
 
     Ok(FidoGetInfoResponse {
         versions,
