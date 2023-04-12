@@ -112,12 +112,42 @@ impl FidoDevice {
         AuthenticatorInfo::new(&mut self.dev)
     }
 
+    pub fn set_pin(&mut self, new_pin: String) -> Result<bool, String> {
+        let err = unsafe {
+            libfido2_sys::fido_dev_set_pin(
+                self.dev.as_mut(),
+                new_pin.as_bytes().as_ptr() as *const i8,
+                std::ptr::null(),
+            )
+        };
+
+        if err != libfido2_sys::FIDO_OK {
+            return Err(strerr(err));
+        }
+
+        Ok(true)
+    }
+
+    pub fn change_pin(&mut self, old_pin: String, new_pin: String) -> Result<bool, String> {
+        let err = unsafe {
+            libfido2_sys::fido_dev_set_pin(
+                self.dev.as_mut(),
+                new_pin.as_bytes().as_ptr() as *const i8,
+                old_pin.as_bytes().as_ptr() as *const i8,
+            )
+        };
+
+        if err != libfido2_sys::FIDO_OK {
+            return Err(strerr(err));
+        }
+
+        Ok(true)
+    }
+
     pub fn reset(&mut self) -> Result<bool, String> {
         let err = unsafe { libfido2_sys::fido_dev_reset(self.dev.as_mut()) };
 
         if err != libfido2_sys::FIDO_OK {
-            unsafe { libfido2_sys::fido_dev_free(&mut self.dev.as_ptr()) };
-
             return Err(strerr(err));
         }
 

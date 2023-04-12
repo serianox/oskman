@@ -2,6 +2,10 @@ import { invoke } from "@tauri-apps/api/tauri";
 type FidoDeviceList = import("./schemas").FidoDeviceList;
 type FidoGetInfoCommand = import("./schemas").FidoGetInfoCommand;
 type FidoGetInfoResponse = import("./schemas").FidoGetInfoResponse;
+type FidoSetPinCommand = import("./schemas").FidoSetPinCommand;
+type FidoSetPinResponse = import("./schemas").FidoSetPinResponse;
+type FidoChangePinCommand = import("./schemas").FidoChangePinCommand;
+type FidoChangePinResponse = import("./schemas").FidoChangePinResponse;
 type FidoResetCommand = import("./schemas").FidoResetCommand;
 type FidoResetResponse = import("./schemas").FidoResetResponse;
 
@@ -16,15 +20,25 @@ const fido_list_devices = (): Promise<FidoDeviceList> => {
 };
 
 async function fido_get_info(
-  dev: FidoGetInfoCommand
+  parameters: FidoGetInfoCommand
 ): Promise<FidoGetInfoResponse> {
   console.log("fido_get_info");
-  return invoke("fido_get_info", { parameters: dev });
+  return invoke("fido_get_info", { parameters: parameters });
 }
 
-async function fido_reset(dev: FidoResetCommand): Promise<FidoResetResponse> {
+async function fido_set_pin(parameters: FidoSetPinCommand): Promise<FidoSetPinResponse> {
+  console.log("fido_set_pin");
+  return invoke("fido_set_pin", { parameters: parameters });
+}
+
+async function fido_change_pin(parameters: FidoChangePinCommand): Promise<FidoChangePinResponse> {
+  console.log("fido_change_pin");
+  return invoke("fido_change_pin", { parameters: parameters });
+}
+
+async function fido_reset(parameters: FidoResetCommand): Promise<FidoResetResponse> {
   console.log("fido_reset");
-  return invoke("fido_reset", { parameters: dev });
+  return invoke("fido_reset", { parameters: parameters });
 }
 
 interface PageHandler {

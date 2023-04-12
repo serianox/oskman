@@ -80,6 +80,30 @@ async fn fido_get_info(parameters: FidoGetInfoCommand) -> Result<FidoGetInfoResp
 }
 
 #[tauri::command]
+async fn fido_set_pin(parameters: FidoSetPinCommand) -> Result<FidoSetPinResponse, String> {
+    debug!("fido_set_pin");
+
+    let mut fido_device = fido2::FidoDevice::new(parameters.dev)?;
+
+    fido_device
+        .set_pin(parameters.new_pin)
+        .map(|_| FidoSetPinResponse { result: true })
+}
+
+#[tauri::command]
+async fn fido_change_pin(
+    parameters: FidoChangePinCommand,
+) -> Result<FidoChangePinResponse, String> {
+    debug!("fido_change_pin");
+
+    let mut fido_device = fido2::FidoDevice::new(parameters.dev)?;
+
+    fido_device
+        .change_pin(parameters.old_pin, parameters.new_pin)
+        .map(|_| FidoChangePinResponse { result: true })
+}
+
+#[tauri::command]
 async fn fido_reset(parameters: FidoResetCommand) -> Result<FidoResetResponse, String> {
     debug!("fido_reset");
 
@@ -110,6 +134,8 @@ fn main() {
             fido_init,
             fido_list_devices,
             fido_get_info,
+            fido_set_pin,
+            fido_change_pin,
             fido_reset,
         ])
         .run(tauri::generate_context!())
