@@ -36,17 +36,105 @@
       <div class="container-fluid">
         <div class="card mx-auto" style="width: 18rem">
           <div class="card-body">
-            <a role="link" aria-disabled="true">Set pin</a>
+            <a href="#setpin" id="main-set-pin-enabled">Set pin</a>
+            <a role="link" aria-disabled="true" id="main-set-pin-disabled"
+              >Set pin</a
+            >
           </div>
         </div>
         <div class="card mx-auto" style="width: 18rem">
           <div class="card-body">
-            <a href="#changepin">Change pin</a>
+            <a href="#changepin" id="main-change-pin-enabled">Change pin</a>
+            <a role="link" aria-disabled="true" id="main-change-pin-disabled"
+              >Change pin</a
+            >
           </div>
         </div>
         <div class="card mx-auto" style="width: 18rem">
           <div class="card-body">
             <a href="#reset">Reset</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div role="region" id="setpin" style="display: none">
+      <section id="navbar">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Security Key</a></li>
+            <li class="breadcrumb-item active" aria-current="page">
+              Change Pin
+            </li>
+          </ol>
+        </nav>
+      </section>
+
+      <div class="container-fluid">
+        <div class="card mx-auto" style="width: 18rem">
+          <div class="card-body">
+            <h5 class="card-title">Set Pin</h5>
+            <p class="card-text"></p>
+            <div class="input-group mb-3">
+              <input
+                type="password"
+                id="setPinInput"
+                name="setPinInput"
+                placeholder="New Pin (at least four characters)"
+                pattern=".{8,}"
+                aria-label=""
+                aria-describedby="basic-addon1"
+                required
+              />
+              <div class="input-group-append">
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  onmousedown="showSetPinInput()"
+                  onmouseup="showSetPinInput()"
+                >
+                  👁️
+                </button>
+              </div>
+            </div>
+
+            <div class="input-group mb-3">
+              <input
+                type="password"
+                id="setPinConfirm"
+                name="setPinConfirm"
+                placeholder="Confirm Pin"
+                pattern=".{8,}"
+                aria-label=""
+                aria-describedby="basic-addon1"
+                required
+              />
+              <div class="input-group-append">
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  onmousedown="showSetPinConfirm()"
+                  onmouseup="showSetPinConfirm()"
+                >
+                  👁️
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="window.setPin();"
+            >
+              Confirm
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="window.location.href='#main';"
+            >
+              Cancel
+            </button>
           </div>
         </div>
       </div>
@@ -138,7 +226,13 @@
               </div>
             </div>
 
-            <button type="button" class="btn btn-primary">Confirm</button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="window.changePin();"
+            >
+              Confirm
+            </button>
             <button
               type="button"
               class="btn btn-secondary"

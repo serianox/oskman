@@ -99,7 +99,7 @@ async fn fido_change_pin(
     let mut fido_device = fido2::FidoDevice::new(parameters.dev)?;
 
     fido_device
-        .change_pin(parameters.old_pin, parameters.new_pin)
+        .change_pin(parameters.new_pin, parameters.old_pin)
         .map(|_| FidoChangePinResponse { result: true })
 }
 

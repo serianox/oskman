@@ -128,7 +128,7 @@ impl FidoDevice {
         Ok(true)
     }
 
-    pub fn change_pin(&mut self, old_pin: String, new_pin: String) -> Result<bool, String> {
+    pub fn change_pin(&mut self, new_pin: String, old_pin: String) -> Result<bool, String> {
         let err = unsafe {
             libfido2_sys::fido_dev_set_pin(
                 self.dev.as_mut(),

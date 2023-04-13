@@ -63,8 +63,8 @@ pub struct FidoSetPinResponse {
 #[serde(rename_all = "camelCase")]
 pub struct FidoChangePinCommand {
     pub dev: String,
-    pub old_pin: String,
     pub new_pin: String,
+    pub old_pin: String,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, schemars::JsonSchema)]
