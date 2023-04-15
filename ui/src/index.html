@@ -36,23 +36,47 @@
       <div class="container-fluid">
         <div class="card mx-auto" style="width: 18rem">
           <div class="card-body">
-            <a href="#setpin" id="main-set-pin-enabled">Set pin</a>
-            <a role="link" aria-disabled="true" id="main-set-pin-disabled"
+            <a href="#setpin" id="main-set-pin-enabled" style="display: none"
+              >Set pin</a
+            >
+            <a
+              role="link"
+              aria-disabled="true"
+              id="main-set-pin-disabled"
+              style="display: visible"
               >Set pin</a
             >
           </div>
         </div>
         <div class="card mx-auto" style="width: 18rem">
           <div class="card-body">
-            <a href="#changepin" id="main-change-pin-enabled">Change pin</a>
-            <a role="link" aria-disabled="true" id="main-change-pin-disabled"
+            <a
+              href="#changepin"
+              id="main-change-pin-enabled"
+              style="display: none"
+              >Change pin</a
+            >
+            <a
+              role="link"
+              aria-disabled="true"
+              id="main-change-pin-disabled"
+              style="display: visible"
               >Change pin</a
             >
           </div>
         </div>
         <div class="card mx-auto" style="width: 18rem">
           <div class="card-body">
-            <a href="#reset">Reset</a>
+            <a href="#reset" id="main-reset-enabled" style="display: none"
+              >Reset</a
+            >
+            <a
+              role="link"
+              aria-disabled="true"
+              id="main-reset-disabled"
+              style="display: visible"
+              >Reset</a
+            >
           </div>
         </div>
       </div>
@@ -124,7 +148,7 @@
             <button
               type="button"
               class="btn btn-primary"
-              onclick="window.setPin();"
+              onclick="window.fido.setPin();"
             >
               Confirm
             </button>
@@ -229,7 +253,7 @@
             <button
               type="button"
               class="btn btn-primary"
-              onclick="window.changePin();"
+              onclick="window.fido.changePin();"
             >
               Confirm
             </button>
@@ -272,7 +296,11 @@
               />
             </div>
 
-            <button type="button" class="btn btn-primary" onclick="reset()">
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="window.fido.reset()"
+            >
               Confirm
             </button>
             <button

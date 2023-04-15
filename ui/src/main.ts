@@ -1,51 +1,4 @@
-import { invoke } from "@tauri-apps/api/tauri";
-type FidoDeviceList = import("./schemas").FidoDeviceList;
-type FidoGetInfoCommand = import("./schemas").FidoGetInfoCommand;
-type FidoGetInfoResponse = import("./schemas").FidoGetInfoResponse;
-type FidoSetPinCommand = import("./schemas").FidoSetPinCommand;
-type FidoSetPinResponse = import("./schemas").FidoSetPinResponse;
-type FidoChangePinCommand = import("./schemas").FidoChangePinCommand;
-type FidoChangePinResponse = import("./schemas").FidoChangePinResponse;
-type FidoResetCommand = import("./schemas").FidoResetCommand;
-type FidoResetResponse = import("./schemas").FidoResetResponse;
-
-const fido_init = () => {
-  console.log("fido_init");
-  invoke("fido_init");
-};
-
-const fido_list_devices = (): Promise<FidoDeviceList> => {
-  console.log("fido_list_devices");
-  return invoke("fido_list_devices");
-};
-
-async function fido_get_info(
-  parameters: FidoGetInfoCommand
-): Promise<FidoGetInfoResponse> {
-  console.log("fido_get_info");
-  return invoke("fido_get_info", { parameters: parameters });
-}
-
-async function fido_set_pin(
-  parameters: FidoSetPinCommand
-): Promise<FidoSetPinResponse> {
-  console.log("fido_set_pin");
-  return invoke("fido_set_pin", { parameters: parameters });
-}
-
-async function fido_change_pin(
-  parameters: FidoChangePinCommand
-): Promise<FidoChangePinResponse> {
-  console.log("fido_change_pin");
-  return invoke("fido_change_pin", { parameters: parameters });
-}
-
-async function fido_reset(
-  parameters: FidoResetCommand
-): Promise<FidoResetResponse> {
-  console.log("fido_reset");
-  return invoke("fido_reset", { parameters: parameters });
-}
+import { Fido } from "./fido";
 
 interface PageHandler {
   route: string;
@@ -96,31 +49,30 @@ addHandler({
   route: "",
   element: "main",
   onLoad: () => {
-    console.log(fido_first_device_path);
+    if (window.fido.first_device_path) {
+      window.fido.get_info().then((_) => {
+        console.log(JSON.stringify(_, null, 4));
 
-    if (fido_first_device_path) {
-      fido_get_info({ dev: fido_first_device_path } as FidoGetInfoCommand).then(
-        (_) => {
-          console.log(JSON.stringify(_, null, 4));
-
-          if (_?.options?.clientPin == true) {
-            hideElementById("main-set-pin-enabled");
-            showElementById("main-set-pin-disabled");
-            showElementById("main-change-pin-enabled");
-            hideElementById("main-change-pin-disabled");
-          } else if (_?.options?.clientPin == false) {
-            showElementById("main-set-pin-enabled");
-            hideElementById("main-set-pin-disabled");
-            hideElementById("main-change-pin-enabled");
-            showElementById("main-change-pin-disabled");
-          } else {
-            hideElementById("main-set-pin-enabled");
-            hideElementById("main-set-pin-disabled");
-            hideElementById("main-change-pin-enabled");
-            hideElementById("main-change-pin-disabled");
-          }
+        if (_?.options?.clientPin == true) {
+          hideElementById("main-set-pin-enabled");
+          showElementById("main-set-pin-disabled");
+          showElementById("main-change-pin-enabled");
+          hideElementById("main-change-pin-disabled");
+        } else if (_?.options?.clientPin == false) {
+          showElementById("main-set-pin-enabled");
+          hideElementById("main-set-pin-disabled");
+          hideElementById("main-change-pin-enabled");
+          showElementById("main-change-pin-disabled");
+        } else {
+          hideElementById("main-set-pin-enabled");
+          showElementById("main-set-pin-disabled");
+          hideElementById("main-change-pin-enabled");
+          showElementById("main-change-pin-disabled");
         }
-      );
+
+        showElementById("main-reset-enabled");
+        hideElementById("main-reset-disabled");
+      });
     }
 
     return;
@@ -166,25 +118,25 @@ addHandler({
   },
 } as PageHandler);
 
-let fido_first_device_path: NonNullable<string> = "";
-
 window.addEventListener("DOMContentLoaded", () => {
-  fido_init();
+  window.fido.init();
 
-  fido_list_devices().then((device_list) => {
-    fido_first_device_path = device_list.dev[0];
+  window.fido.list_devices().then((device_list) => {
+    window.fido.first_device_path = device_list.dev[0];
 
     window.addEventListener("hashchange", () => {
       onHashChange(window.location.hash);
     });
 
     // force reload of start page
-    window.location.hash = "";
+    _defaultHandler.onLoad();
   });
 });
 
 declare global {
   interface Window {
+    fido: Fido;
+
     showSetPinInput: () => void;
 
     showSetPinConfirm: () => void;
@@ -194,14 +146,10 @@ declare global {
     showNewPin: () => void;
 
     showNewPinConfirm: () => void;
-
-    setPin: () => void;
-
-    changePin: () => void;
-
-    reset: () => void;
   }
 }
+
+window.fido = new Fido();
 
 const showPin = (elementId: string) => () => {
   const x = <HTMLInputElement>document.getElementById(elementId);
@@ -218,50 +166,3 @@ window.showCurrentPin = showPin("currentPinInput");
 window.showNewPin = showPin("newPinInput");
 
 window.showNewPinConfirm = showPin("newPinConfirm");
-
-window.setPin = () => {
-  console.log(fido_first_device_path);
-  const newPin = (document.getElementById("setPinInput") as HTMLInputElement)
-    .value;
-  fido_set_pin({
-    dev: fido_first_device_path,
-    newPin: newPin,
-  } as FidoSetPinCommand)
-    .then((_) => {
-      window.location.hash = "";
-    })
-    .catch((_) => {
-      console.log(_);
-    });
-};
-
-window.changePin = () => {
-  console.log(fido_first_device_path);
-  const newPin = (document.getElementById("newPinInput") as HTMLInputElement)
-    .value;
-  const oldPin = (
-    document.getElementById("currentPinInput") as HTMLInputElement
-  ).value;
-  fido_change_pin({
-    dev: fido_first_device_path,
-    newPin: newPin,
-    oldPin: oldPin,
-  } as FidoChangePinCommand)
-    .then((_) => {
-      window.location.hash = "";
-    })
-    .catch((_) => {
-      console.log(_);
-    });
-};
-
-window.reset = () => {
-  console.log(fido_first_device_path);
-  fido_reset({ dev: fido_first_device_path } as FidoResetCommand)
-    .then((_) => {
-      window.location.hash = "";
-    })
-    .catch((_) => {
-      console.log(_);
-    });
-};
