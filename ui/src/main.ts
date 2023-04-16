@@ -51,7 +51,7 @@ addHandler({
   onLoad: () => {
     if (window.fido.first_device_path) {
       window.fido.get_info().then((_) => {
-        console.log(JSON.stringify(_, null, 4));
+        //console.log(JSON.stringify(_, null, 4));
 
         if (_?.options?.clientPin == true) {
           hideElementById("main-set-pin-enabled");
@@ -73,6 +73,14 @@ addHandler({
         showElementById("main-reset-enabled");
         hideElementById("main-reset-disabled");
       });
+    } else {
+      hideElementById("main-set-pin-enabled");
+      showElementById("main-set-pin-disabled");
+      hideElementById("main-change-pin-enabled");
+      showElementById("main-change-pin-disabled");
+
+      hideElementById("main-reset-enabled");
+      showElementById("main-reset-disabled");
     }
 
     return;
@@ -125,16 +133,20 @@ addHandler({
 window.addEventListener("DOMContentLoaded", () => {
   window.fido.init();
 
-  window.fido.list_devices().then((device_list) => {
-    window.fido.first_device_path = device_list.dev[0];
-
-    window.addEventListener("hashchange", () => {
-      onHashChange(window.location.hash);
-    });
-
-    // force reload of start page
-    _defaultHandler.onLoad();
+  window.addEventListener("hashchange", () => {
+    onHashChange(window.location.hash);
   });
+
+  setTimeout(function refreshFidoDevice() {
+    window.fido.list_devices().then((device_list) => {
+      window.fido.first_device_path = device_list.dev[0];
+
+      // force reload of start page
+      _defaultHandler.onLoad();
+
+      setTimeout(refreshFidoDevice, 1000);
+    });
+  }, 0);
 });
 
 declare global {
