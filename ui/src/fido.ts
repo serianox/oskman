@@ -35,20 +35,12 @@ export class Fido {
     return invoke("fido_set_pin", { parameters: parameters });
   }
 
-  setPin() {
+  setPin(newPin: string): Promise<FidoSetPinResponse> {
     console.log(this.first_device_path);
-    const newPin = (document.getElementById("setPinInput") as HTMLInputElement)
-      .value;
-    this.invoke_set_pin({
+    return this.invoke_set_pin({
       dev: this.first_device_path,
       newPin: newPin,
-    } as FidoSetPinCommand)
-      .then(() => {
-        location.hash = "";
-      })
-      .catch((_) => {
-        console.log(_);
-      });
+    } as FidoSetPinCommand);
   }
 
   invoke_change_pin(
@@ -58,38 +50,23 @@ export class Fido {
     return invoke("fido_change_pin", { parameters: parameters });
   }
 
-  changePin() {
+  changePin(newPin: string, oldPin: string): Promise<FidoChangePinResponse> {
     console.log(this.first_device_path);
-    const newPin = (document.getElementById("newPinInput") as HTMLInputElement)
-      .value;
-    const oldPin = (
-      document.getElementById("currentPinInput") as HTMLInputElement
-    ).value;
-    this.invoke_change_pin({
+    return this.invoke_change_pin({
       dev: this.first_device_path,
       newPin: newPin,
       oldPin: oldPin,
-    } as FidoChangePinCommand)
-      .then(() => {
-        location.hash = "";
-      })
-      .catch((_) => {
-        console.log(_);
-      });
+    } as FidoChangePinCommand);
   }
 
   invoket_reset(parameters: FidoResetCommand): Promise<FidoResetResponse> {
     return invoke("fido_reset", { parameters: parameters });
   }
 
-  reset() {
+  reset(): Promise<FidoResetResponse> {
     console.log(this.first_device_path);
-    this.invoket_reset({ dev: this.first_device_path } as FidoResetCommand)
-      .then(() => {
-        location.hash = "";
-      })
-      .catch((_) => {
-        console.log(_);
-      });
+    return this.invoket_reset({
+      dev: this.first_device_path,
+    } as FidoResetCommand);
   }
 }

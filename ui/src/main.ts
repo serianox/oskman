@@ -98,6 +98,8 @@ addHandler({
   route: "#changepin",
   element: "changepin",
   onLoad: () => {
+    (document.getElementById("change-pin-alert") as HTMLElement).style.display =
+      "none";
     (document.getElementById("currentPinInput") as HTMLInputElement).value = "";
     (document.getElementById("newPinInput") as HTMLInputElement).value = "";
     (document.getElementById("newPinConfirm") as HTMLInputElement).value = "";
@@ -111,6 +113,8 @@ addHandler({
   route: "#reset",
   element: "reset",
   onLoad: () => {
+    (document.getElementById("reset-alert") as HTMLElement).style.display =
+      "none";
     (document.getElementById("resetConfirm") as HTMLInputElement).value = "";
   },
   onUnload: () => {

@@ -95,6 +95,13 @@
       </section>
 
       <div class="container-fluid">
+        <div
+          class="alert alert-danger"
+          role="alert"
+          id="set-pin-alert"
+          style="display: none"
+        ></div>
+
         <div class="card mx-auto" style="width: 18rem">
           <div class="card-body">
             <h5 class="card-title">Set Pin</h5>
@@ -164,11 +171,27 @@
               </div>
             </div>
 
+            <script>
+              function onSubmitSetPin() {
+                const newPin = document.getElementById("setPinInput").value;
+                window.fido
+                  .setPin(newPin)
+                  .then((_) => {
+                    location.hash = "";
+                  })
+                  .catch((_) => {
+                    document.getElementById("set-pin-alert").innerHTML = _;
+                    document.getElementById("set-pin-alert").style.display =
+                      "inline";
+                    console.log(_);
+                  });
+              }
+            </script>
             <button
               type="button"
               id="setPinSubmit"
               class="btn btn-primary disabled"
-              onclick="window.fido.setPin();"
+              onclick="onSubmitSetPin();"
             >
               Confirm
             </button>
@@ -197,6 +220,13 @@
       </section>
 
       <div class="container-fluid">
+        <div
+          class="alert alert-danger"
+          role="alert"
+          id="change-pin-alert"
+          style="display: none"
+        ></div>
+
         <div class="card mx-auto" style="width: 18rem">
           <div class="card-body">
             <h5 class="card-title">Change Pin</h5>
@@ -289,11 +319,28 @@
               </div>
             </div>
 
+            <script>
+              function onSubmitChangePin() {
+                const newPin = document.getElementById("newPinInput").value;
+                const oldPin = document.getElementById("currentPinInput").value;
+                window.fido
+                  .changePin(newPin, oldPin)
+                  .then((_) => {
+                    location.hash = "";
+                  })
+                  .catch((_) => {
+                    document.getElementById("change-pin-alert").innerHTML = _;
+                    document.getElementById("change-pin-alert").style.display =
+                      "inline";
+                    console.log(_);
+                  });
+              }
+            </script>
             <button
               type="button"
               id="changePinSubmit"
               class="btn btn-primary disabled"
-              onclick="window.fido.changePin();"
+              onclick="onSubmitChangePin();"
             >
               Confirm
             </button>
@@ -320,6 +367,13 @@
       </section>
 
       <div class="container-fluid">
+        <div
+          class="alert alert-danger"
+          role="alert"
+          id="reset-alert"
+          style="display: none"
+        ></div>
+
         <div class="card mx-auto" style="width: 18rem">
           <div class="card-body">
             <h5 class="card-title">Reset</h5>
@@ -350,11 +404,26 @@
               />
             </div>
 
+            <script>
+              function onSubmitReset() {
+                window.fido
+                  .reset()
+                  .then((_) => {
+                    location.hash = "";
+                  })
+                  .catch((_) => {
+                    document.getElementById("reset-alert").innerHTML = _;
+                    document.getElementById("reset-alert").style.display =
+                      "inline";
+                    console.log(_);
+                  });
+              }
+            </script>
             <button
               type="button"
               id="resetSubmit"
               class="btn btn-primary disabled"
-              onclick="window.fido.reset()"
+              onclick="onSubmitReset();"
             >
               Confirm
             </button>
