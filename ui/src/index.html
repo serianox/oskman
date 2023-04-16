@@ -99,6 +99,23 @@
           <div class="card-body">
             <h5 class="card-title">Set Pin</h5>
             <p class="card-text"></p>
+            <script>
+              function onInputSetPin() {
+                if (
+                  document.getElementById("setPinInput").value.length >= 4 &&
+                  document.getElementById("setPinInput").value ===
+                    document.getElementById("setPinConfirm").value
+                ) {
+                  document
+                    .getElementById("setPinSubmit")
+                    .classList.remove("disabled");
+                } else {
+                  document
+                    .getElementById("setPinSubmit")
+                    .classList.add("disabled");
+                }
+              }
+            </script>
             <div class="input-group mb-3">
               <input
                 type="password"
@@ -108,6 +125,7 @@
                 pattern=".{8,}"
                 aria-label=""
                 aria-describedby="basic-addon1"
+                oninput="onInputSetPin()"
                 required
               />
               <div class="input-group-append">
@@ -117,7 +135,7 @@
                   onmousedown="showSetPinInput()"
                   onmouseup="showSetPinInput()"
                 >
-                  👁️
+                  𓁹
                 </button>
               </div>
             </div>
@@ -131,6 +149,7 @@
                 pattern=".{8,}"
                 aria-label=""
                 aria-describedby="basic-addon1"
+                oninput="onInputSetPin()"
                 required
               />
               <div class="input-group-append">
@@ -140,14 +159,15 @@
                   onmousedown="showSetPinConfirm()"
                   onmouseup="showSetPinConfirm()"
                 >
-                  👁️
+                  𓁹
                 </button>
               </div>
             </div>
 
             <button
               type="button"
-              class="btn btn-primary"
+              id="setPinSubmit"
+              class="btn btn-primary disabled"
               onclick="window.fido.setPin();"
             >
               Confirm
@@ -181,6 +201,23 @@
           <div class="card-body">
             <h5 class="card-title">Change Pin</h5>
             <p class="card-text"></p>
+            <script>
+              function onInputChangePin() {
+                if (
+                  document.getElementById("newPinInput").value.length >= 4 &&
+                  document.getElementById("newPinInput").value ===
+                    document.getElementById("newPinConfirm").value
+                ) {
+                  document
+                    .getElementById("changePinSubmit")
+                    .classList.remove("disabled");
+                } else {
+                  document
+                    .getElementById("changePinSubmit")
+                    .classList.add("disabled");
+                }
+              }
+            </script>
             <div class="input-group mb-3">
               <input
                 type="password"
@@ -199,7 +236,7 @@
                   onmousedown="showCurrentPin()"
                   onmouseup="showCurrentPin()"
                 >
-                  👁️
+                  𓁹
                 </button>
               </div>
             </div>
@@ -213,6 +250,7 @@
                 pattern=".{8,}"
                 aria-label=""
                 aria-describedby="basic-addon1"
+                oninput="onInputChangePin()"
                 required
               />
               <div class="input-group-append">
@@ -222,7 +260,7 @@
                   onmousedown="showNewPin()"
                   onmouseup="showNewPin()"
                 >
-                  👁️
+                  𓁹
                 </button>
               </div>
             </div>
@@ -236,6 +274,7 @@
                 pattern=".{8,}"
                 aria-label=""
                 aria-describedby="basic-addon1"
+                oninput="onInputChangePin()"
                 required
               />
               <div class="input-group-append">
@@ -245,14 +284,15 @@
                   onmousedown="showNewPinConfirm()"
                   onmouseup="showNewPinConfirm()"
                 >
-                  👁️
+                  𓁹
                 </button>
               </div>
             </div>
 
             <button
               type="button"
-              class="btn btn-primary"
+              id="changePinSubmit"
+              class="btn btn-primary disabled"
               onclick="window.fido.changePin();"
             >
               Confirm
@@ -284,6 +324,19 @@
           <div class="card-body">
             <h5 class="card-title">Reset</h5>
             <p class="card-text"></p>
+            <script>
+              function onInputResetConfirm() {
+                if (document.getElementById("resetConfirm").value === "reset") {
+                  document
+                    .getElementById("resetSubmit")
+                    .classList.remove("disabled");
+                } else {
+                  document
+                    .getElementById("resetSubmit")
+                    .classList.add("disabled");
+                }
+              }
+            </script>
             <div class="input-group mb-3">
               <input
                 type="text"
@@ -292,13 +345,15 @@
                 placeholder="Type 'reset' here to confirm."
                 aria-label=""
                 aria-describedby="basic-addon1"
+                oninput="onInputResetConfirm()"
                 required
               />
             </div>
 
             <button
               type="button"
-              class="btn btn-primary"
+              id="resetSubmit"
+              class="btn btn-primary disabled"
               onclick="window.fido.reset()"
             >
               Confirm
