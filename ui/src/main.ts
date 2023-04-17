@@ -49,6 +49,31 @@ addHandler({
   route: "",
   element: "main",
   onLoad: () => {
+    setTimeout(function refreshFidoDevice() {
+      window.fido.list_devices().then((device_list) => {
+        const first_device_in_path = device_list.dev[0];
+
+        if (first_device_in_path != undefined) {
+          window.fido.first_device_path = first_device_in_path;
+
+          window.location.href = "#menu";
+        } else {
+          setTimeout(refreshFidoDevice, 1000);
+        }
+      });
+    }, 0);
+
+    return;
+  },
+  onUnload: () => {
+    return;
+  },
+} as PageHandler);
+
+addHandler({
+  route: "#menu",
+  element: "menu",
+  onLoad: () => {
     if (window.fido.first_device_path) {
       window.fido.get_info().then((_) => {
         //console.log(JSON.stringify(_, null, 4));
@@ -137,16 +162,8 @@ window.addEventListener("DOMContentLoaded", () => {
     onHashChange(window.location.hash);
   });
 
-  setTimeout(function refreshFidoDevice() {
-    window.fido.list_devices().then((device_list) => {
-      window.fido.first_device_path = device_list.dev[0];
-
-      // force reload of start page
-      _defaultHandler.onLoad();
-
-      setTimeout(refreshFidoDevice, 1000);
-    });
-  }, 0);
+  // force reload of start page
+  _defaultHandler.onLoad();
 });
 
 declare global {
