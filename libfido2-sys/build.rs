@@ -24,17 +24,30 @@ fn main() {
             .expect("cannot canonicalize path");
 
         // This is the path to the static library file.
+        let libsrc_path = libdir_path.join("src");
+
+        // This is the path to the static library file.
         let lib_path = libdir_path.join("build/src");
 
         // Tell cargo to look for shared libraries in the specified directory
         println!("cargo:rustc-link-search={}", lib_path.to_str().unwrap());
 
-        // Tell cargo to tell rustc to link the system libfido2
-        // shared library.
-        println!("cargo:rustc-link-lib=fido2");
+        // Tell cargo to tell rustc to link the static fido2 library
+        println!("cargo:rustc-link-lib=static=fido2");
+
+        // Tell cargo to tell rustc to link the system
+        // shared libraries dependencies.
+        println!("cargo:rustc-link-lib=udev");
+        println!("cargo:rustc-link-lib=cbor");
+        println!("cargo:rustc-link-lib=ssl");
+        println!("cargo:rustc-link-lib=crypto");
+        println!("cargo:rustc-link-lib=pcsclite");
 
         // Tell cargo to invalidate the built crate whenever the wrapper changes
         println!("cargo:rerun-if-changed=wrapper.h");
+
+        // Tell cargo to invalidate the built crate whenever the submodule changes
+        println!("cargo:rerun-if-changed={}", libsrc_path.to_str().unwrap());
 
         // Unwrap if it is not possible to spawn the process.
         if !std::process::Command::new("cmake")
