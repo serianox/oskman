@@ -22,6 +22,8 @@ hex = "0.4"
 
 [dependencies.libfido2-sys]
 path = "./libfido2-sys"
+default_features = false
+features = []
 
 [dependencies.oskman-schemas]
 path = "./oskman-schemas"
