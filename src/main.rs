@@ -7,6 +7,7 @@ pub mod fido2;
 
 use log::debug;
 use oskman_schemas::schemas::*;
+use tauri::Manager;
 
 #[tauri::command]
 fn fido_init(window: tauri::Window) {
@@ -19,7 +20,7 @@ fn fido_init(window: tauri::Window) {
     let mut inotify = Inotify::init().expect("Failed to initialize an inotify instance");
 
     inotify
-        .add_watch("/dev", WatchMask::CREATE | WatchMask::DELETE)
+        .add_watch("/dev", WatchMask::CREATE | WatchMask::ATTRIB | WatchMask::DELETE)
         .expect("Failed to add file watch");
 
     std::thread::spawn(move || loop {
@@ -32,9 +33,7 @@ fn fido_init(window: tauri::Window) {
             event.name.map(|event_name| {
                 event_name.to_str().map(|event_name| {
                     if event_name.starts_with("hidraw") {
-                        debug!("{:?}", event_name);
-
-                        window.emit("hid-watch", {}).unwrap();
+                        window.app_handle().emit_all("hid-watch", {}).unwrap();
                     }
                 });
             });
@@ -146,8 +145,6 @@ fn main() {
 
     tauri::Builder::default()
         .setup(|app| {
-            use tauri::Manager;
-
             #[cfg(debug_assertions)] // only include this code on debug builds
             {
                 app.get_window("main").map(|window| {

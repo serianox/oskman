@@ -1,4 +1,6 @@
+import { listen } from "@tauri-apps/api/event";
 import { Fido } from "./fido";
+import { FidoDeviceList } from "./schemas";
 
 interface PageHandler {
   route: string;
@@ -49,20 +51,6 @@ addHandler({
   route: "",
   element: "main",
   onLoad: () => {
-    setTimeout(function refreshFidoDevice() {
-      window.fido.list_devices().then((device_list) => {
-        const first_device_in_path = device_list.dev[0];
-
-        if (first_device_in_path != undefined) {
-          window.fido.first_device_path = first_device_in_path;
-
-          window.location.href = "#menu";
-        } else {
-          setTimeout(refreshFidoDevice, 1000);
-        }
-      });
-    }, 0);
-
     return;
   },
   onUnload: () => {
@@ -155,6 +143,8 @@ addHandler({
   },
 } as PageHandler);
 
+let previous_device_list: FidoDeviceList;
+
 window.addEventListener("DOMContentLoaded", () => {
   window.fido.init();
 
@@ -162,8 +152,34 @@ window.addEventListener("DOMContentLoaded", () => {
     onHashChange(window.location.hash);
   });
 
-  // force reload of start page
-  _defaultHandler.onLoad();
+  window.fido.list_devices().then((device_list) => {
+    previous_device_list = device_list;
+
+    listen("hid-watch", () => {
+      window.fido.list_devices().then((device_list) => {
+        const dev = device_list.dev;
+
+        if (!(window.fido.first_device_path in dev)) {
+          window.location.href = "#main";
+
+          previous_device_list = device_list;
+
+          return;
+        }
+
+        const diff = dev.filter((_) => !(_ in previous_device_list.dev));
+        if (diff.length > 1) {
+          window.fido.first_device_path = diff[0];
+
+          window.location.href = "#menu";
+
+          previous_device_list = device_list;
+
+          return;
+        }
+      });
+    });
+  });
 });
 
 declare global {
