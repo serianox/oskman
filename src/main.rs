@@ -9,10 +9,37 @@ use log::debug;
 use oskman_schemas::schemas::*;
 
 #[tauri::command]
-fn fido_init() {
+fn fido_init(window: tauri::Window) {
     debug!("fido_init");
 
-    fido2::init()
+    fido2::init();
+
+    use inotify::{Inotify, WatchMask};
+
+    let mut inotify = Inotify::init().expect("Failed to initialize an inotify instance");
+
+    inotify
+        .add_watch("/dev", WatchMask::CREATE | WatchMask::DELETE)
+        .expect("Failed to add file watch");
+
+    std::thread::spawn(move || loop {
+        let mut buffer = [0; 1024];
+        let events = inotify
+            .read_events_blocking(&mut buffer)
+            .expect("Error while waiting for events");
+
+        for event in events {
+            event.name.map(|event_name| {
+                event_name.to_str().map(|event_name| {
+                    if event_name.starts_with("hidraw") {
+                        debug!("{:?}", event_name);
+
+                        window.emit("hid-watch", {}).unwrap();
+                    }
+                });
+            });
+        }
+    });
 }
 
 #[tauri::command]
