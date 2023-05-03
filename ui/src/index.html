@@ -200,7 +200,7 @@
                 window.fido
                   .setPin(newPin)
                   .then((_) => {
-                    location.hash = "";
+                    location.hash = "#menu";
                   })
                   .catch((_) => {
                     document.getElementById("set-pin-alert").innerHTML = _;
@@ -221,7 +221,7 @@
             <button
               type="button"
               class="btn btn-secondary"
-              onclick="window.location.href='#main';"
+              onclick="window.location.href='#menu';"
             >
               Cancel
             </button>
@@ -349,7 +349,7 @@
                 window.fido
                   .changePin(newPin, oldPin)
                   .then((_) => {
-                    location.hash = "";
+                    location.hash = "#menu";
                   })
                   .catch((_) => {
                     document.getElementById("change-pin-alert").innerHTML = _;
@@ -370,7 +370,7 @@
             <button
               type="button"
               class="btn btn-secondary"
-              onclick="window.location.href='#main';"
+              onclick="window.location.href='#menu';"
             >
               Cancel
             </button>
@@ -432,7 +432,7 @@
                 window.fido
                   .reset()
                   .then((_) => {
-                    location.hash = "";
+                    location.hash = "#menu";
                   })
                   .catch((_) => {
                     document.getElementById("reset-alert").innerHTML = _;
@@ -453,7 +453,7 @@
             <button
               type="button"
               class="btn btn-secondary"
-              onclick="window.location.href='#main';"
+              onclick="window.location.href='#menu';"
             >
               Cancel
             </button>

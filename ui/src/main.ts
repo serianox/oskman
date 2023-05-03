@@ -143,7 +143,7 @@ addHandler({
   },
 } as PageHandler);
 
-let previous_device_list: FidoDeviceList;
+let current_device_list: FidoDeviceList;
 
 window.addEventListener("DOMContentLoaded", () => {
   window.fido.init();
@@ -153,27 +153,33 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   window.fido.list_devices().then((device_list) => {
-    previous_device_list = device_list;
+    current_device_list = device_list;
 
     listen("hid-watch", () => {
       window.fido.list_devices().then((device_list) => {
-        const dev = device_list.dev;
+        const previous_device_list = current_device_list;
+        current_device_list = device_list;
 
-        if (!(window.fido.first_device_path in dev)) {
+        const device_removed =
+          window.fido.first_device_path &&
+          !(window.fido.first_device_path in current_device_list.dev);
+
+        if (device_removed) {
+          window.fido.first_device_path = undefined;
+
           window.location.href = "#main";
-
-          previous_device_list = device_list;
 
           return;
         }
 
-        const diff = dev.filter((_) => !(_ in previous_device_list.dev));
-        if (diff.length > 1) {
+        const diff = current_device_list.dev.filter(
+          (_) => !(_ in previous_device_list.dev)
+        );
+
+        if (diff.length >= 1) {
           window.fido.first_device_path = diff[0];
 
           window.location.href = "#menu";
-
-          previous_device_list = device_list;
 
           return;
         }

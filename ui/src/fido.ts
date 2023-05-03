@@ -11,7 +11,7 @@ type FidoResetCommand = import("./schemas").FidoResetCommand;
 type FidoResetResponse = import("./schemas").FidoResetResponse;
 
 export class Fido {
-  first_device_path: string;
+  first_device_path: string | undefined;
 
   init() {
     console.log("fido_init");
