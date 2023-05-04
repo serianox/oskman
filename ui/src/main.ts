@@ -71,7 +71,14 @@ addHandler({
   onLoad: () => {
     if (window.fido.first_device_path) {
       window.fido.get_info().then((_) => {
-        //console.log(JSON.stringify(_, null, 4));
+        console.log(
+          window.fido.first_device_path +
+            " - " +
+            _.aaguid.replace(
+              /(.{8})(.{4})(.{4})(.{4})(.{12})/,
+              "$1-$2-$3-$4-$5"
+            )
+        );
 
         if (_?.options?.clientPin == true) {
           hideElementById("main-set-pin-enabled");
