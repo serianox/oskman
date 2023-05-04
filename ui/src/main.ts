@@ -6,8 +6,19 @@ import "bootstrap/dist/css/bootstrap.css";
 import /** as bootstrap from */ "bootstrap";
 
 import { listen } from "@tauri-apps/api/event";
+import { appWindow } from "@tauri-apps/api/window";
+
 import { Fido } from "./fido";
 import { FidoDeviceList } from "./schemas";
+
+appWindow.theme().then(
+  (theme) => {
+    (document.documentElement as HTMLElement).setAttribute(
+      "data-bs-theme",
+      theme?.toString() || "light"
+    );
+  }
+);
 
 interface PageHandler {
   route: string;
