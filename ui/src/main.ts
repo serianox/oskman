@@ -1,3 +1,10 @@
+// Import our custom CSS
+//import "scss/styles.scss";
+import "bootstrap/dist/css/bootstrap.css";
+
+// Import all of Bootstrap's JS
+import /** as bootstrap from */ "bootstrap";
+
 import { listen } from "@tauri-apps/api/event";
 import { Fido } from "./fido";
 import { FidoDeviceList } from "./schemas";
